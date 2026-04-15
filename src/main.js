@@ -1,6 +1,6 @@
 /**
- * FiTI v4 · 入口
- * 金融变身模拟器 — ticker + 盖章尽调 + Story 竖屏结果流
+ * FBTI v4 · 入口
+ * Finance Bro Type Indicator — ticker + 盖章尽调 + Story 竖屏结果流
  */
 
 import { setText, throttle } from "./utils.js";

@@ -1,9 +1,9 @@
 {
-  "name": "fiti",
+  "name": "fbti",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "FiTI 金融人格测试 — 基于认知·行为·社交三大模型的职业画像",
+  "description": "Finance Bro Type Indicator — 金融人刻板印象人格测试",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

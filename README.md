@@ -1,6 +1,6 @@
-# 金融人刻板印象TI (Financial Stereotype Type Indicator)
+# Finance Bro Type Indicator (FBTI)
 
-基于670个金融调侃类视频内容分析的刻板印象人格测试项目。
+基于670个金融调侃类视频内容分析的金融人刻板印象人格测试项目。
 
 ## 项目背景
 
@@ -20,7 +20,7 @@
 ## 项目结构
 
 ```
-fiti-stereotype/
+finance-bro-type-indicator/
 ├── data/
 │   ├── config.json          # 配置文件
 │   ├── dimensions.json      # 12维度定义（认知/行为/社交）
@@ -91,5 +91,3 @@ npm run build
 
 - 原始项目：https://github.com/niuniu-869/fiti
 - SBTI项目：https://github.com/pingfanfan/SBTI
-- 维度分析框架保留原项目设计
-- 人格类型基于真实内容分析重新设计

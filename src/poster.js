@@ -12,7 +12,7 @@
 
 import QRCode from "qrcode";
 
-const SITE_URL = "https://niuniu-869.github.io/fiti/";
+const SITE_URL = "https://wcboy.github.io/finance-bro-type-indicator/";
 const LEVEL_RADIUS = { L: 1 / 3, M: 2 / 3, H: 1 };
 
 const IDENTITY_COMPANY = {
@@ -325,7 +325,7 @@ export async function renderPoster({
   setFont(ctx, 26, 700, FONT_MONO);
   const kicker = isEgg
     ? "— HIDDEN FILE · 彩蛋档案解锁 —"
-    : "— OFFER LETTER · FiTI 档案部 —";
+    : "— OFFER LETTER · FBTI 档案部 —";
   ctx.fillText(kicker, W / 2, cursorY);
   cursorY += 40;
 
@@ -683,7 +683,7 @@ export async function renderPoster({
 
   setFont(ctx, 17, 500, FONT_MONO);
   ctx.fillStyle = theme.inkDim;
-  ctx.fillText("niuniu-869.github.io/fiti", textX, qrY + 84);
+  ctx.fillText("wcboy.github.io/finance-bro-type-indicator", textX, qrY + 84);
 
   setFont(ctx, 18, 700, FONT_CJK_SANS);
   ctx.fillStyle = theme.rouge;
@@ -695,12 +695,12 @@ export async function renderPoster({
 
   setFont(ctx, 28, 700, FONT_SCRIPT, "italic");
   ctx.fillStyle = theme.gold;
-  const hashAscii = "#FiTI";
+  const hashAscii = "#FBTI";
   const hashAsciiW = ctx.measureText(hashAscii).width;
   ctx.fillText(hashAscii, textX, qrY + 144);
   setFont(ctx, 22, 700, FONT_CJK_SANS);
   ctx.fillStyle = theme.gold;
-  ctx.fillText("#金融变身模拟器", textX + hashAsciiW + 14, qrY + 152);
+  ctx.fillText("#金融人刻板印象测试", textX + hashAsciiW + 14, qrY + 152);
 
   // 页脚
   setFont(ctx, 16, 500, FONT_MONO);

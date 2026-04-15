@@ -14,9 +14,9 @@ function setText(el, v) {
 
 /** 身份中文 + 讽刺公司名 */
 const IDENTITY_META = {
-  intern: { cn: "在校生/实习中", company: "金融刻板印象TI · 实习候选人池" },
-  junior: { cn: "工作1-3年", company: "金融刻板印象TI · 初级打工人档案" },
-  senior: { cn: "工作3年以上", company: "金融刻板印象TI · 资深从业者档案" },
+  intern: { cn: "在校生/实习中", company: "Finance Bro TI · 实习候选人池" },
+  junior: { cn: "工作1-3年", company: "Finance Bro TI · 初级打工人档案" },
+  senior: { cn: "工作3年以上", company: "Finance Bro TI · 资深从业者档案" },
 };
 
 /** Hero 卡 kicker 文案（根据 mode） */
@@ -120,7 +120,7 @@ export function renderResult({
   if (coverKicker) {
     coverKicker.textContent = isEgg
       ? "— 🥚 HIDDEN FILE · 彩蛋档案已解锁 —"
-      : "— 测试结果 · 金融刻板印象档案 —";
+      : "— 测试结果 · Finance Bro 档案 —";
   }
 
   // ============ Story 2 · Hero 代号大字报 ============
