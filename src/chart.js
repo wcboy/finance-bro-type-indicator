@@ -42,8 +42,8 @@ export function renderRadar(
 
   const cx = cssSize / 2;
   const cy = cssSize / 2;
-  // 给 label 预留更多空间
-  const radius = cssSize / 2 - Math.max(44, cssSize * 0.18);
+  // 给 label 预留更多空间（特别是右侧）
+  const radius = cssSize / 2 - Math.max(52, cssSize * 0.22);
   const N = dimOrder.length;
   if (N === 0) return;
 
@@ -124,9 +124,22 @@ export function renderRadar(
     const angle = (Math.PI * 2 * i) / N - Math.PI / 2;
     const def = dimensionDefs[dimOrder[i]] || { name: dimOrder[i] };
     const label = def.name || dimOrder[i];
-    const lx = cx + Math.cos(angle) * (radius + fontSize * 1.1);
-    const ly = cy + Math.sin(angle) * (radius + fontSize * 1.1);
+
+    // 根据角度调整标签距离，右侧需要更多空间
     const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    let labelDist = radius + fontSize * 1.3;
+    if (cos > 0.3) {
+      // 右侧标签需要更多空间
+      labelDist = radius + fontSize * 1.8;
+    } else if (cos < -0.3) {
+      // 左侧
+      labelDist = radius + fontSize * 1.5;
+    }
+
+    const lx = cx + cos * labelDist;
+    const ly = cy + sin * labelDist;
+
     if (cos > 0.2) ctx.textAlign = "left";
     else if (cos < -0.2) ctx.textAlign = "right";
     else ctx.textAlign = "center";
