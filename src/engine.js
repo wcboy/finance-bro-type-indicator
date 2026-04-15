@@ -142,8 +142,18 @@ export function determineResult(userLevels, dimOrder, standardTypes, specialType
   const best = rankings[0]
   const fallback = specialTypes.find((t) => t.code === 'NPC')
 
+  // 无匹配结果
+  if (!best) {
+    return {
+      primary: fallback || null,
+      secondary: null,
+      rankings,
+      mode: 'fallback',
+    }
+  }
+
   // 兜底
-  if (best && best.similarity < fallbackThreshold && fallback) {
+  if (best.similarity < fallbackThreshold && fallback) {
     return {
       primary: { ...fallback, similarity: best.similarity, exact: best.exact, distance: best.distance },
       secondary: showSecondary ? best : null,

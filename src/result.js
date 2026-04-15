@@ -72,8 +72,8 @@ function calculateKlineStats(klineData) {
   for (let i = 1; i < prices.length && i <= candles.length; i++) {
     returns.push((prices[i] - prices[i - 1]) / prices[i - 1]);
   }
-  const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length || 0;
-  const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length || 0;
+  const avgReturn = returns.length > 0 ? returns.reduce((a, b) => a + b, 0) / returns.length : 0;
+  const variance = returns.length > 0 ? returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length : 0;
   const stdDev = Math.sqrt(variance);
   const sharpe = stdDev > 0 ? (avgReturn / stdDev) * Math.sqrt(30) : 0; // 年化
 
@@ -131,7 +131,9 @@ export function renderResult({
   const rarityText = primary.rarity || "—";
   const heroRarityEl = byId("hero-rarity");
   if (heroRarityEl) {
-    heroRarityEl.parentElement.firstChild.textContent = `${KICKER_BY_MODE[mode]} `;
+    if (heroRarityEl.parentElement?.firstChild) {
+      heroRarityEl.parentElement.firstChild.textContent = `${KICKER_BY_MODE[mode]} `;
+    }
     heroRarityEl.textContent = rarityText;
   }
 

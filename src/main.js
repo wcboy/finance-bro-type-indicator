@@ -32,7 +32,8 @@ function showPage(name) {
   document
     .querySelectorAll(".page")
     .forEach((p) => p.classList.remove("active"));
-  byId(`page-${name}`).classList.add("active");
+  const page = byId(`page-${name}`);
+  if (page) page.classList.add("active");
   window.scrollTo({
     top: 0,
     behavior: "instant" in window ? "instant" : "auto",
@@ -107,16 +108,20 @@ function initPreviewCarousel() {
   }
 
   paint(0);
-  const interval = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  const intervalMs = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ? 7000
     : 3500;
   let cur = 0;
-  setInterval(() => {
+  const introPage = byId("page-intro");
+  const intervalId = setInterval(() => {
     cur = (cur + 1) % picks.length;
     // 仅在首页活动时推进（不浪费）
-    if (!byId("page-intro").classList.contains("active")) return;
+    if (!introPage || !introPage.classList.contains("active")) return;
     paint(cur);
-  }, interval);
+  }, intervalMs);
+
+  // 返回intervalId以便清理
+  return intervalId;
 }
 
 /**
@@ -470,11 +475,14 @@ async function init() {
       </div>
     `;
     document.body.appendChild(modal);
-    modal.querySelector("#back-popup-confirm").addEventListener("click", () => {
-      modal.remove();
-      hasShownBackPopup = true;
-      onConfirm();
-    });
+    const confirmBtn = modal.querySelector("#back-popup-confirm");
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", () => {
+        modal.remove();
+        hasShownBackPopup = true;
+        onConfirm();
+      });
+    }
   }
 
   // 处理返回上一题
@@ -600,26 +608,34 @@ async function init() {
   quiz = createQuiz(questions, config, onComplete);
 
   // —— 返回上一题按钮 ——
-  backBtn.addEventListener("click", handleBack);
+  if (backBtn) {
+    backBtn.addEventListener("click", handleBack);
+  }
 
   // —— 首页 按钮 ——
-  byId("btn-start").addEventListener("click", () => {
-    priceState = null; // 重置 K 线价格
-    hasShownBackPopup = false; // 重置弹窗状态
-    const first = quiz.start();
-    showPage("quiz");
-    renderQuestion(first, quiz.progress());
-    updateBackButtonVisibility();
-  });
+  const btnStart = byId("btn-start");
+  if (btnStart) {
+    btnStart.addEventListener("click", () => {
+      priceState = null; // 重置 K 线价格
+      hasShownBackPopup = false; // 重置弹窗状态
+      const first = quiz.start();
+      showPage("quiz");
+      renderQuestion(first, quiz.progress());
+      updateBackButtonVisibility();
+    });
+  }
 
-  byId("btn-restart").addEventListener("click", () => {
-    priceState = null; // 重置 K 线价格
-    hasShownBackPopup = false; // 重置弹窗状态
-    const first = quiz.start();
-    showPage("quiz");
-    renderQuestion(first, quiz.progress());
-    updateBackButtonVisibility();
-  });
+  const btnRestart = byId("btn-restart");
+  if (btnRestart) {
+    btnRestart.addEventListener("click", () => {
+      priceState = null; // 重置 K 线价格
+      hasShownBackPopup = false; // 重置弹窗状态
+      const first = quiz.start();
+      showPage("quiz");
+      renderQuestion(first, quiz.progress());
+      updateBackButtonVisibility();
+    });
+  }
 
   // —— 分享海报 ——
   const posterModal = byId("poster-modal");
