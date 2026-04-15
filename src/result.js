@@ -195,16 +195,13 @@ export function renderResult({
       const lv = levels[dim] || "M";
       const row = document.createElement("div");
       row.className = "dim-row";
-      const emoji = document.createElement("span");
-      emoji.className = "emoji";
-      emoji.textContent = def.emoji || "•";
       const name = document.createElement("span");
       name.className = "name";
       name.innerHTML = `${def.name || dim}<small>${dim}</small>`;
       const level = document.createElement("span");
       level.className = `level lvl-${lv}`;
       level.textContent = lv === "H" ? "拉满" : lv === "L" ? "摆烂" : "平衡";
-      row.append(emoji, name, level);
+      row.append(name, level);
       dimsWrap.appendChild(row);
     }
   }

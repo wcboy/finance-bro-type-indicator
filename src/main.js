@@ -392,9 +392,11 @@ async function init() {
   function renderQuestion(q, progress) {
     if (!q) return;
 
-    // K 线蜡烛 — 0-based 当前 index，传入答题历史、聪明决策序列和价格状态
+    // K 线蜡烛 — 0-based 当前 index
+    // 如果使用过回退功能，K线使用首次答题历史；否则使用当前答题历史
+    const klineHistory = quiz.hasUsedGoBack() ? quiz.getFirstAnswerHistory() : quiz.getAnswerHistory();
     const curIdx = Math.max(0, progress.current - 1);
-    priceState = renderCandleProgress(progress.total, curIdx, quiz.getAnswerHistory(), quiz.getSmartChoiceSequence(), priceState);
+    priceState = renderCandleProgress(progress.total, curIdx, klineHistory, quiz.getSmartChoiceSequence(), priceState);
 
     setText(progressText, `${progress.current} / ${progress.total}`);
     setText(
@@ -452,19 +454,80 @@ async function init() {
   let lastResult = null;
   let lastIdentity = "junior";
   let priceState = null; // K 线价格状态
+  let hasShownBackPopup = false; // 是否已显示过回退提示弹窗
+  let backBtn = byId("btn-back"); // 返回上一题按钮
+
+  // 显示回退提示弹窗
+  function showBackPopup(onConfirm) {
+    const modal = document.createElement("div");
+    modal.className = "back-modal";
+    modal.innerHTML = `
+      <div class="back-modal-content">
+        <div class="back-modal-title">提示</div>
+        <div class="back-modal-text">
+          你可以更改作答，但你的<strong>K线不可以回到昨天</strong>。
+        </div>
+        <button class="btn btn-primary" id="back-popup-confirm">我知道了</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector("#back-popup-confirm").addEventListener("click", () => {
+      modal.remove();
+      hasShownBackPopup = true;
+      onConfirm();
+    });
+  }
+
+  // 处理返回上一题
+  function handleBack() {
+    const progress = quiz.progress();
+    // 第一题不能返回
+    if (progress.current <= 1 && progress.phase === "main") return;
+    if (progress.phase === "anchor" && progress.current <= 1) return;
+
+    // 第一次使用回退功能时显示弹窗
+    if (!hasShownBackPopup) {
+      showBackPopup(() => {
+        const prev = quiz.goBack();
+        if (prev) {
+          renderQuestion(prev, quiz.progress());
+          updateBackButtonVisibility();
+        }
+      });
+    } else {
+      const prev = quiz.goBack();
+      if (prev) {
+        renderQuestion(prev, quiz.progress());
+        updateBackButtonVisibility();
+      }
+    }
+  }
+
+  // 更新返回按钮可见性
+  function updateBackButtonVisibility() {
+    const progress = quiz.progress();
+    // 第一题隐藏返回按钮
+    if (progress.current <= 1) {
+      backBtn.hidden = true;
+    } else {
+      backBtn.hidden = false;
+    }
+  }
 
   function handleAnswer(value, originalIdx) {
     const next = quiz.answer(value, originalIdx);
     if (next) {
       renderQuestion(next, quiz.progress());
+      updateBackButtonVisibility();
     } else {
       // 最后一题答完后，更新最后一根蜡烛
       const progress = quiz.progress();
       const curIdx = Math.max(0, progress.current - 1);
+      const klineHistory = quiz.hasUsedGoBack() ? quiz.getFirstAnswerHistory() : quiz.getAnswerHistory();
       priceState = renderCandleProgress(
         progress.total,
         curIdx,
-        quiz.getAnswerHistory(),
+        klineHistory,
         quiz.getSmartChoiceSequence(),
         priceState
       );
@@ -538,19 +601,26 @@ async function init() {
 
   quiz = createQuiz(questions, config, onComplete);
 
+  // —— 返回上一题按钮 ——
+  backBtn.addEventListener("click", handleBack);
+
   // —— 首页 按钮 ——
   byId("btn-start").addEventListener("click", () => {
     priceState = null; // 重置 K 线价格
+    hasShownBackPopup = false; // 重置弹窗状态
     const first = quiz.start();
     showPage("quiz");
     renderQuestion(first, quiz.progress());
+    updateBackButtonVisibility();
   });
 
   byId("btn-restart").addEventListener("click", () => {
     priceState = null; // 重置 K 线价格
+    hasShownBackPopup = false; // 重置弹窗状态
     const first = quiz.start();
     showPage("quiz");
     renderQuestion(first, quiz.progress());
+    updateBackButtonVisibility();
   });
 
   // —— 分享海报 ——

@@ -65,6 +65,9 @@ export function createQuiz(questions, config, onComplete) {
     mainIdx: 0,
     // 记录每题选择的原始 index（用于 K 线）
     answerHistory: [], // [{ questionId, originalIdx, value }]
+    // 记录首次答题状态（用于回退时保留 K 线）
+    firstAnswerHistory: [], // 首次答题的完整历史
+    hasGoneBack: false, // 是否曾使用过回退功能
   }
 
   function currentIndex() {
@@ -94,6 +97,8 @@ export function createQuiz(questions, config, onComplete) {
     state.anchorIdx = 0
     state.mainIdx = 0
     state.answerHistory = []
+    state.firstAnswerHistory = []
+    state.hasGoneBack = false
     if (anchorQs.length === 0) state.phase = 'main'
     if (orderedMain.length === 0 && anchorQs.length === 0) {
       finish()
@@ -119,11 +124,16 @@ export function createQuiz(questions, config, onComplete) {
         state.answers[q.id] = optionValue
       }
       // 记录答题历史（原始 index）
-      state.answerHistory.push({
+      const answerRecord = {
         questionId: q.id,
         originalIdx: originalIdx,
         value: optionValue
-      })
+      }
+      state.answerHistory.push(answerRecord)
+      // 首次答题时保存历史（用于 K 线）
+      if (!state.hasGoneBack && state.firstAnswerHistory.length < state.answerHistory.length) {
+        state.firstAnswerHistory.push(answerRecord)
+      }
       state.mainIdx += 1
       if (state.mainIdx >= orderedMain.length) {
         state.phase = 'done'
@@ -136,6 +146,38 @@ export function createQuiz(questions, config, onComplete) {
     }
 
     return currentQuestion()
+  }
+
+  /**
+   * 回退到上一题
+   * @returns {Object|null} 上一题的问题对象，或 null 表示无法回退
+   */
+  function goBack() {
+    if (state.phase === 'anchor') {
+      if (state.anchorIdx === 0) return null
+      state.anchorIdx -= 1
+      return currentQuestion()
+    }
+    if (state.phase === 'main') {
+      if (state.mainIdx === 0) {
+        // 回退到 anchor 阶段
+        if (anchorQs.length === 0) return null
+        state.phase = 'anchor'
+        state.anchorIdx = anchorQs.length - 1
+        return currentQuestion()
+      }
+      state.mainIdx -= 1
+      // 标记已使用回退功能
+      if (!state.hasGoneBack) {
+        state.hasGoneBack = true
+        // 如果是第一次回退，保存当前的 K 线历史
+        if (state.firstAnswerHistory.length === 0) {
+          state.firstAnswerHistory = [...state.answerHistory]
+        }
+      }
+      return currentQuestion()
+    }
+    return null
   }
 
   function finish() {
@@ -174,14 +216,25 @@ export function createQuiz(questions, config, onComplete) {
     return smartChoiceSequence
   }
 
+  function getFirstAnswerHistory() {
+    return state.firstAnswerHistory.length > 0 ? state.firstAnswerHistory : state.answerHistory
+  }
+
+  function hasUsedGoBack() {
+    return state.hasGoneBack
+  }
+
   return {
     start,
     answer,
+    goBack,
     progress,
     currentQuestion,
     getAnswerHistory,
+    getFirstAnswerHistory,
     getScenarioSequence,
     getSmartChoiceSequence,
+    hasUsedGoBack,
     get state() {
       return state
     },

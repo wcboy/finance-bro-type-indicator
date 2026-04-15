@@ -281,6 +281,47 @@ body:not(.app-ready) #app {
 }
 .btn-ghost:hover { background: rgba(26, 20, 10, 0.05); }
 
+.btn-back {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+}
+
+/* 回退提示弹窗 */
+.back-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 16, 10, 0.7);
+  backdrop-filter: blur(4px);
+}
+.back-modal-content {
+  background: var(--paper);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.back-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--ink-black);
+  margin-bottom: 0.8rem;
+}
+.back-modal-text {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+}
+.back-modal-text strong {
+  color: var(--rouge);
+}
+
 /* 深色卡片上的次要按钮 */
 .card-dark .btn-secondary {
   color: var(--gold-bright);
@@ -1019,7 +1060,7 @@ body:not(.app-ready) #app {
 }
 .dim-row {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: 0.7rem;
   align-items: center;
   padding: 0.5rem 0.6rem;
@@ -1027,7 +1068,6 @@ body:not(.app-ready) #app {
   border-left: 3px solid var(--gold);
   font-size: 0.88rem;
 }
-.dim-row .emoji { font-size: 1.1rem; }
 .dim-row .name { font-weight: 700; color: var(--ink-black); }
 .dim-row .name small {
   font-family: var(--font-mono);

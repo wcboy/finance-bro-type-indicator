@@ -115,15 +115,15 @@ export function renderRadar(
     }
   }
 
-  // 标签
+  // 标签（不使用 emoji，仅显示维度名称）
   const fontSize = Math.max(10, Math.round(cssSize * 0.036));
   ctx.font = `${fontSize}px -apple-system, "Microsoft YaHei", sans-serif`;
   ctx.fillStyle = labelColor;
   ctx.textBaseline = "middle";
   for (let i = 0; i < N; i++) {
     const angle = (Math.PI * 2 * i) / N - Math.PI / 2;
-    const def = dimensionDefs[dimOrder[i]] || { name: dimOrder[i], emoji: "" };
-    const label = `${def.emoji || ""}${def.name || dimOrder[i]}`.trim();
+    const def = dimensionDefs[dimOrder[i]] || { name: dimOrder[i] };
+    const label = def.name || dimOrder[i];
     const lx = cx + Math.cos(angle) * (radius + fontSize * 1.1);
     const ly = cy + Math.sin(angle) * (radius + fontSize * 1.1);
     const cos = Math.cos(angle);

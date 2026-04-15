@@ -1,0 +1,475 @@
+# 人格类型 Pattern 重新设计方案
+
+## 新维度顺序
+STRATEGY, LEARN, CYNICISM, RISK, DECISION, EXECUTE, PATIENCE, SURVIVAL, SOCIAL, CONFLICT, BOUNDARY, NETWORK
+
+---
+
+## Standard Types (16种)
+
+### 1. POSER (金融精英表演者)
+```json
+{
+  "code": "POSER",
+  "pattern": "M-M-L-M-H-H-L-M-H-M-L-H",
+  "rationale": {
+    "STRATEGY": "M - 会话术但不是真战略家，能识别基本套路",
+    "LEARN": "M - 能学习但方向可能错，需要时间消化",
+    "CYNICISM": "L - 天真派，相信自己的表演，被人设迷惑",
+    "RISK": "M - 平衡型，可控范围内愿意表演",
+    "DECISION": "H - 果断表演，不容置疑",
+    "EXECUTE": "H - 执行机器，人设不能崩",
+    "PATIENCE": "L - 需要即时反馈（点赞、认可）",
+    "SURVIVAL": "M - 懂基本生存，维护人设",
+    "SOCIAL": "H - 社交达人，朋友圈是战场",
+    "CONFLICT": "M - 审时度势，不轻易撕破脸",
+    "BOUNDARY": "L - 边界模糊，为了人设可以牺牲真实",
+    "NETWORK": "H - 人脉大师，精准维护精英人设"
+  }
+}
+```
+
+### 2. SNOOP (草根解构师)
+```json
+{
+  "code": "SNOOP",
+  "pattern": "M-M-H-M-L-L-M-H-L-H-H-L",
+  "rationale": {
+    "STRATEGY": "M - 有规划但灵活，能看穿基本套路",
+    "LEARN": "M - 能从错误中改进，识别行业套路",
+    "CYNICISM": "H - 解构师，一眼看穿本质，对虚伪免疫",
+    "RISK": "M - 平衡型，不赌不拼，看清就好",
+    "DECISION": "L - 犹豫不决，看得太透反而难选",
+    "EXECUTE": "L - 死线战士，最后时刻爆发",
+    "PATIENCE": "M - 能等待但有上限",
+    "SURVIVAL": "H - 生存大师，深谙职场潜规则",
+    "SOCIAL": "L - 内向，看透后更不愿社交",
+    "CONFLICT": "H - 战士，敢于揭露虚伪",
+    "BOUNDARY": "H - 护城河，不参与虚伪游戏",
+    "NETWORK": "L - 独行侠，靠实力（吐槽）说话"
+  }
+}
+```
+
+### 3. CRAM (证书收割机)
+```json
+{
+  "code": "CRAM",
+  "pattern": "H-H-M-M-H-H-H-M-L-M-L-L",
+  "rationale": {
+    "STRATEGY": "H - 深谋远虑，证书是战略布局",
+    "LEARN": "H - 方法论萃取，考试专家",
+    "CYNICISM": "M - 清醒者，但相信证书价值",
+    "RISK": "M - 平衡型，证书是护城河",
+    "DECISION": "H - 果断考证，不犹豫",
+    "EXECUTE": "H - 执行机器，刷题机器",
+    "PATIENCE": "H - 延迟满足，证书是长期投资",
+    "SURVIVAL": "M - 适应者，用证书保护自己",
+    "SOCIAL": "L - 内向，时间都用来学习",
+    "CONFLICT": "M - 审时度势，用证书说话",
+    "BOUNDARY": "L - 软边界，考证是逃避也是坚持",
+    "NETWORK": "L - 独行侠，考试是个人战斗"
+  }
+}
+```
+
+### 4. NEPOT (关系户收割者)
+```json
+{
+  "code": "NEPOT",
+  "pattern": "L-L-M-M-M-H-H-H-H-M-L-H",
+  "rationale": {
+    "STRATEGY": "L - 直觉决策，靠直觉而非战略",
+    "LEARN": "L - 慢热型，不需要学习就能赢",
+    "CYNICISM": "M - 清醒者，知道规则但不深度解构",
+    "RISK": "M - 平衡型，有资源不必冒险",
+    "DECISION": "M - 中庸决策，有资源慢慢来",
+    "EXECUTE": "H - 执行机器，有资源支持",
+    "PATIENCE": "H - 延迟满足，资源会慢慢来",
+    "SURVIVAL": "H - 生存大师，资源是生存基础",
+    "SOCIAL": "H - 社交达人，资源需要维护",
+    "CONFLICT": "M - 审时度势，有资源不必撕逼",
+    "BOUNDARY": "L - 软边界，资源超越边界",
+    "NETWORK": "H - 人脉大师，人脉是资产组合"
+  }
+}
+```
+
+### 5. TOXIC (面试PUA大师)
+```json
+{
+  "code": "TOXIC",
+  "pattern": "H-M-M-H-H-M-M-M-H-H-M-M",
+  "rationale": {
+    "STRATEGY": "H - 棋手战略，善于布局施压",
+    "LEARN": "M - 渐进式学习，掌握PUA技巧",
+    "CYNICISM": "M - 清醒者，利用但不深度解构",
+    "RISK": "H - 赌徒灵魂，敢于施压",
+    "DECISION": "H - 快刀斩乱麻，果断出击",
+    "EXECUTE": "M - 稳定输出，压力测试是常态",
+    "PATIENCE": "M - 有条件耐心，等待候选人崩溃",
+    "SURVIVAL": "M - 适应者，懂得保护自己",
+    "SOCIAL": "H - 社交达人，面试是战场",
+    "CONFLICT": "H - 战士，主动出击施压",
+    "BOUNDARY": "M - 灵活边界，有权力就有边界",
+    "NETWORK": "M - 网络者，维护核心关系"
+  }
+}
+```
+
+### 6. GRINDER (加班战神)
+```json
+{
+  "code": "GRINDER",
+  "pattern": "M-M-M-M-M-H-M-M-L-M-L-L",
+  "rationale": {
+    "STRATEGY": "M - 有规划，但靠执行而非策略",
+    "LEARN": "M - 渐进式学习，在实践中成长",
+    "CYNICISM": "M - 清醒者，知道自己被压榨",
+    "RISK": "M - 平衡型，不冒险，踏实干活",
+    "DECISION": "M - 中庸决策，听安排",
+    "EXECUTE": "H - 执行机器，投行最爱",
+    "PATIENCE": "M - 能等待，项目周期长",
+    "SURVIVAL": "M - 适应者，努力生存",
+    "SOCIAL": "L - 内向，时间都在工作",
+    "CONFLICT": "M - 审时度势，不主动冲突",
+    "BOUNDARY": "L - 软边界，工作侵占生活",
+    "NETWORK": "L - 独行侠，同事就是社交圈"
+  }
+}
+```
+
+### 7. QUANT (金融思维入侵者)
+```json
+{
+  "code": "QUANT",
+  "pattern": "H-H-H-H-H-M-M-L-L-M-L-L",
+  "rationale": {
+    "STRATEGY": "H - 棋手战略，多步推演",
+    "LEARN": "H - 方法论萃取，模型化一切",
+    "CYNICISM": "H - 解构师，情感也是变量",
+    "RISK": "H - 赌徒灵魂，量化风险收益",
+    "DECISION": "H - 快刀斩乱麻，模型决策",
+    "EXECUTE": "M - 稳定输出，模型指导行动",
+    "PATIENCE": "M - 有条件耐心，等待最优解",
+    "SURVIVAL": "L - 天真羔羊，不懂职场潜规则",
+    "SOCIAL": "L - 内向，社交效率低",
+    "CONFLICT": "M - 审时度势，理性分析",
+    "BOUNDARY": "L - 软边界，容易被情感入侵",
+    "NETWORK": "L - 独行侠，独立思考"
+  }
+}
+```
+
+### 8. BEAN (财务背锅侠)
+```json
+{
+  "code": "BEAN",
+  "pattern": "M-M-L-L-M-M-M-L-L-M-L-L",
+  "rationale": {
+    "STRATEGY": "M - 有规划，遵守会计准则",
+    "LEARN": "M - 渐进式学习，考证提升",
+    "CYNICISM": "L - 天真派，相信领导不会坑我",
+    "RISK": "L - 极度保守，厌恶风险",
+    "DECISION": "M - 中庸决策，听领导安排",
+    "EXECUTE": "M - 稳定输出，按时做账",
+    "PATIENCE": "M - 能等待，账总是要做的",
+    "SURVIVAL": "L - 天真羔羊，容易被甩锅",
+    "SOCIAL": "L - 内向，财务不需要社交",
+    "CONFLICT": "M - 审时度势，不做冲突",
+    "BOUNDARY": "L - 软边界，不懂拒绝领导",
+    "NETWORK": "L - 独行侠，独立做账"
+  }
+}
+```
+
+### 9. BUTTERFLY (社交收割机)
+```json
+{
+  "code": "BUTTERFLY",
+  "pattern": "L-M-L-M-M-M-H-H-H-H-M-H",
+  "rationale": {
+    "STRATEGY": "L - 直觉决策，靠直觉连接人",
+    "LEARN": "M - 渐进式学习，了解行业八卦",
+    "CYNICISM": "L - 天真派，相信人际关系价值",
+    "RISK": "M - 平衡型，社交是稳健投资",
+    "DECISION": "M - 中庸决策，看人脉走向",
+    "EXECUTE": "M - 稳定输出，咖啡局是KPI",
+    "PATIENCE": "H - 延迟满足，人脉长期变现",
+    "SURVIVAL": "H - 生存大师，人脉是生存工具",
+    "SOCIAL": "H - 社交达人，社交充电",
+    "CONFLICT": "H - 战士，冲突也是社交机会",
+    "BOUNDARY": "M - 灵活边界，关系决定边界",
+    "NETWORK": "H - 人脉大师，人脉是核心资产"
+  }
+}
+```
+
+### 10. HOPPER (跳槽套利者)
+```json
+{
+  "code": "HOPPER",
+  "pattern": "M-M-H-M-H-M-M-H-M-M-M-L",
+  "rationale": {
+    "STRATEGY": "M - 有规划，看到机会就跳",
+    "LEARN": "M - 渐进式学习，快速适应新公司",
+    "CYNICISM": "H - 解构师，看穿公司问题就跑",
+    "RISK": "M - 平衡型，跳槽是可控风险",
+    "DECISION": "H - 快刀斩乱麻，果断跳槽",
+    "EXECUTE": "M - 稳定输出，在哪家都靠谱",
+    "PATIENCE": "M - 能等待，等offer",
+    "SURVIVAL": "H - 生存大师，止损是生存智慧",
+    "SOCIAL": "M - 变色龙，适应新环境",
+    "CONFLICT": "M - 审时度势，不撕逼直接走",
+    "BOUNDARY": "M - 灵活边界，公司只是平台",
+    "NETWORK": "L - 独行侠，频繁跳槽难深耕"
+  }
+}
+```
+
+### 11. FLEX (炫富表演艺术家)
+```json
+{
+  "code": "FLEX",
+  "pattern": "L-M-L-H-M-M-H-H-M-M-L-M",
+  "rationale": {
+    "STRATEGY": "L - 直觉决策，表演靠直觉",
+    "LEARN": "M - 渐进式学习，学会表演技巧",
+    "CYNICISM": "L - 天真派，相信自己的包装",
+    "RISK": "H - 赌徒灵魂，敢于炫耀",
+    "DECISION": "M - 中庸决策，包装要稳",
+    "EXECUTE": "M - 稳定输出，人设不能崩",
+    "PATIENCE": "H - 延迟满足，人设是长期投资",
+    "SURVIVAL": "H - 生存大师，表演是生存术",
+    "SOCIAL": "H - 社交达人，朋友圈是战场",
+    "CONFLICT": "M - 审时度势，不轻易撕破脸",
+    "BOUNDARY": "L - 软边界，为了人设牺牲真实",
+    "NETWORK": "M - 网络者，维护精英形象"
+  }
+}
+```
+
+### 12. SLACKER (躺平哲学家)
+```json
+{
+  "code": "SLACKER",
+  "pattern": "L-M-M-M-L-L-M-M-L-M-H-H",
+  "rationale": {
+    "STRATEGY": "L - 直觉决策，不规划",
+    "LEARN": "M - 渐进式学习，摸鱼技巧",
+    "CYNICISM": "M - 清醒者，看透了就不卷",
+    "RISK": "M - 平衡型，不冒险摸鱼",
+    "DECISION": "L - 犹豫不决，能拖就拖",
+    "EXECUTE": "L - 死线战士，最后时刻做",
+    "PATIENCE": "M - 能等待，等下班",
+    "SURVIVAL": "M - 适应者，摸鱼也是生存",
+    "SOCIAL": "L - 内向，不想社交",
+    "CONFLICT": "M - 审时度势，不冲突",
+    "BOUNDARY": "H - 护城河，下班是底线",
+    "NETWORK": "H - 人脉大师，维护退休圈"
+  }
+}
+```
+
+### 13. FOMO (焦虑加速器)
+```json
+{
+  "code": "FOMO",
+  "pattern": "H-H-M-M-H-H-M-L-L-M-L-M",
+  "rationale": {
+    "STRATEGY": "H - 棋手战略，焦虑驱动规划",
+    "LEARN": "H - 方法论萃取，考所有证",
+    "CYNICISM": "M - 清醒者，焦虑让人清醒",
+    "RISK": "M - 平衡型，焦虑让人谨慎",
+    "DECISION": "H - 快刀斩乱麻，焦虑驱动行动",
+    "EXECUTE": "H - 执行机器，焦虑驱动执行",
+    "PATIENCE": "M - 有条件耐心，但焦虑难等",
+    "SURVIVAL": "L - 天真羔羊，被焦虑利用",
+    "SOCIAL": "L - 内向，焦虑让人退缩",
+    "CONFLICT": "M - 审时度势，焦虑让人谨慎",
+    "BOUNDARY": "L - 软边界，焦虑侵蚀边界",
+    "NETWORK": "M - 网络者，焦虑驱动社交"
+  }
+}
+```
+
+### 14. PUFFER (简历整容师)
+```json
+{
+  "code": "PUFFER",
+  "pattern": "M-M-L-M-H-M-M-M-M-M-L-M",
+  "rationale": {
+    "STRATEGY": "M - 有规划，包装是策略",
+    "LEARN": "M - 渐进式学习，学会包装",
+    "CYNICISM": "L - 天真派，相信自己的包装",
+    "RISK": "M - 平衡型，包装要适度",
+    "DECISION": "H - 快刀斩乱麻，果断包装",
+    "EXECUTE": "M - 稳定输出，简历要漂亮",
+    "PATIENCE": "M - 能等待，等面试",
+    "SURVIVAL": "M - 适应者，包装是生存术",
+    "SOCIAL": "M - 变色龙，适应面试官",
+    "CONFLICT": "M - 审时度势，包装要圆滑",
+    "BOUNDARY": "L - 软边界，包装模糊边界",
+    "NETWORK": "M - 网络者，简历是名片"
+  }
+}
+```
+
+### 15. ROO (海归水学历代言人)
+```json
+{
+  "code": "ROO",
+  "pattern": "L-L-M-M-M-M-M-H-M-M-L-M",
+  "rationale": {
+    "STRATEGY": "L - 直觉决策，选QS50靠直觉",
+    "LEARN": "L - 慢热型，留学学习慢",
+    "CYNICISM": "M - 清醒者，知道含金量问题",
+    "RISK": "M - 平衡型，留学是稳健选择",
+    "DECISION": "M - 中庸决策，跟着排名走",
+    "EXECUTE": "M - 稳定输出，按时毕业",
+    "PATIENCE": "M - 能等待，学位是耐心",
+    "SURVIVAL": "H - 生存大师，适应异国环境",
+    "SOCIAL": "M - 变色龙，适应留学生圈",
+    "CONFLICT": "M - 审时度势，辩护含金量",
+    "BOUNDARY": "L - 软边界，学历是保护",
+    "NETWORK": "M - 网络者，校友是资源"
+  }
+}
+```
+
+### 16. SNEAK (职场老六)
+```json
+{
+  "code": "SNEAK",
+  "pattern": "M-M-H-M-M-M-M-H-M-M-M-L",
+  "rationale": {
+    "STRATEGY": "M - 有规划，找捷径是策略",
+    "LEARN": "M - 渐进式学习，学习规则漏洞",
+    "CYNICISM": "H - 解构师，看穿规则本质",
+    "RISK": "M - 平衡型，捷径不是赌博",
+    "DECISION": "M - 中庸决策，等机会",
+    "EXECUTE": "M - 稳定输出，低调做事",
+    "PATIENCE": "M - 能等待，等漏洞",
+    "SURVIVAL": "H - 生存大师，捷径是生存智慧",
+    "SOCIAL": "M - 变色龙，适应规则",
+    "CONFLICT": "M - 审时度势，不撕逼",
+    "BOUNDARY": "M - 灵活边界，规则是工具",
+    "NETWORK": "L - 独行侠，捷径是个人的"
+  }
+}
+```
+
+---
+
+## Special Types (3种)
+
+### NPC (金融路人甲)
+```json
+{
+  "code": "NPC",
+  "pattern": "M-M-M-M-M-M-M-M-M-M-M-M",
+  "rationale": {
+    "STRATEGY": "M - 中等，无法归类",
+    "LEARN": "M - 中等，无法归类",
+    "CYNICISM": "M - 中等，无法归类",
+    "RISK": "M - 中等，无法归类",
+    "DECISION": "M - 中等，无法归类",
+    "EXECUTE": "M - 中等，无法归类",
+    "PATIENCE": "M - 中等，无法归类",
+    "SURVIVAL": "M - 中等，无法归类",
+    "SOCIAL": "M - 中等，无法归类",
+    "CONFLICT": "M - 中等，无法归类",
+    "BOUNDARY": "M - 中等，无法归类",
+    "NETWORK": "M - 中等，无法归类"
+  },
+  "note": "NPC 是 fallback 类型，所有维度都是 M 表示中等/无法明确归类"
+}
+```
+
+### CHOSEN (天选关系户)
+```json
+{
+  "code": "CHOSEN",
+  "pattern": "L-L-M-L-M-M-M-H-M-M-H-H",
+  "rationale": {
+    "STRATEGY": "L - 直觉决策，不需要策略",
+    "LEARN": "L - 慢热型，不需要学习",
+    "CYNICISM": "M - 清醒者，知道自己位置",
+    "RISK": "L - 极度保守，不需要冒险",
+    "DECISION": "M - 中庸决策，随便选",
+    "EXECUTE": "M - 稳定输出，体验生活",
+    "PATIENCE": "M - 能等待，慢慢体验",
+    "SURVIVAL": "H - 生存大师，资源保护",
+    "SOCIAL": "M - 变色龙，社交是体验",
+    "CONFLICT": "M - 审时度势，不必冲突",
+    "BOUNDARY": "H - 护城河，资源是边界",
+    "NETWORK": "H - 人脉大师，生来就有"
+  }
+}
+```
+
+### UNCERT (证书无效论信徒)
+```json
+{
+  "code": "UNCERT",
+  "pattern": "M-H-H-M-L-H-M-M-L-M-L-L",
+  "rationale": {
+    "STRATEGY": "M - 有规划，但方向错了",
+    "LEARN": "H - 方法论萃取，考试能力强",
+    "CYNICISM": "H - 解构师，看穿证书无用",
+    "RISK": "M - 平衡型，考证是保守选择",
+    "DECISION": "L - 犹豫不决，考完发现没用",
+    "EXECUTE": "H - 执行机器，考了很多证",
+    "PATIENCE": "M - 能等待，等证书变现",
+    "SURVIVAL": "M - 适应者，证书没帮上忙",
+    "SOCIAL": "L - 内向，时间都在考证",
+    "CONFLICT": "M - 审时度势，证书没用不冲突",
+    "BOUNDARY": "L - 软边界，证书没保护",
+    "NETWORK": "L - 独行侠，证书没带来人脉"
+  }
+}
+```
+
+---
+
+## Pattern 汇总表
+
+| Code | STRATEGY | LEARN | CYNICISM | RISK | DECISION | EXECUTE | PATIENCE | SURVIVAL | SOCIAL | CONFLICT | BOUNDARY | NETWORK |
+|------|----------|-------|----------|------|----------|---------|----------|----------|--------|----------|----------|---------|
+| POSER | M | M | L | M | H | H | L | M | H | M | L | H |
+| SNOOP | M | M | H | M | L | L | M | H | L | H | H | L |
+| CRAM | H | H | M | M | H | H | H | M | L | M | L | L |
+| NEPOT | L | L | M | M | M | H | H | H | H | M | L | H |
+| TOXIC | H | M | M | H | H | M | M | M | H | H | M | M |
+| GRINDER | M | M | M | M | M | H | M | M | L | M | L | L |
+| QUANT | H | H | H | H | H | M | M | L | L | M | L | L |
+| BEAN | M | M | L | L | M | M | M | L | L | M | L | L |
+| BUTTERFLY | L | M | L | M | M | M | H | H | H | H | M | H |
+| HOPPER | M | M | H | M | H | M | M | H | M | M | M | L |
+| FLEX | L | M | L | H | M | M | H | H | H | M | L | M |
+| SLACKER | L | M | M | M | L | L | M | M | L | M | H | H |
+| FOMO | H | H | M | M | H | H | M | L | L | M | L | M |
+| PUFFER | M | M | L | M | H | M | M | M | M | M | L | M |
+| ROO | L | L | M | M | M | M | M | H | M | M | L | M |
+| SNEAK | M | M | H | M | M | M | M | H | M | M | M | L |
+| NPC | M | M | M | M | M | M | M | M | M | M | M | M |
+| CHOSEN | L | L | M | L | M | M | M | H | M | M | H | H |
+| UNCERT | M | H | H | M | L | H | M | M | L | M | L | L |
+
+---
+
+## 设计原则总结
+
+1. **维度匹配**：pattern 的12个位置严格按照新维度顺序排列
+2. **人格一致性**：每个维度值都符合人格类型的描述和特征
+3. **可被选出**：确保每个 pattern 都有可能通过答题被选出
+4. **差异化**：确保每个人格类型的 pattern 有明显差异
+5. **真实性**：pattern 符合真实职场人群的特征分布
+
+## 关键发现
+
+- **CRAM** 和 **QUANT** 的学习力和策略思维都很高，但 CRAM 更注重证书（NETWORK-L），QUANT 更注重独立思考（CYNICISM-H）
+- **NEPOT** 和 **BUTTERFLY** 的 NETWORK 都是 H，但 NEPOT 是资源背景（STRATEGY-L），BUTTERFLY 是主动经营（SOCIAL-H）
+- **GRINDER** 是最"正常"的类型，大部分维度都是 M，只有 EXECUTE-H
+- **SNOOP** 和 **QUANT** 都有 CYNICISM-H，但 SNOOP 是看透不参与（SURVIVAL-H），QUANT 是模型化一切（STRATEGY-H）
+- **FLEX** 和 **POSER** 都是表演型，但 FLEX 是炫富表演（RISK-H），POSER 是精英表演（STRATEGY-M）
