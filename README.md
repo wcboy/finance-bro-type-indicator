@@ -85,8 +85,7 @@ npm run build
 
 ## 数据来源
 
-- 原始视频数据：670个金融短视频
-- 分析工具：ModelArts DSV3.2 API
+- 原始视频数据：670个金融调侃类视频
 - 分析结果：`/Volumes/LamarHD/FITI/transcripts/analysis/`
 
 ## 致谢
