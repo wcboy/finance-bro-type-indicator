@@ -24,6 +24,96 @@ import cognitive from "../data/interpretations/cognitive.json";
 import behavioral from "../data/interpretations/behavioral.json";
 import social from "../data/interpretations/social.json";
 
+// ============ 本地存储管理 ============
+const STORAGE_KEY = "fbti_history";
+const COUNTER_KEY = "fbti_counter";
+
+/**
+ * 获取本地历史记录
+ */
+function getLocalHistory() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * 保存测试记录到本地
+ * @param {Object} record - 测试记录
+ */
+function saveToLocalHistory(record) {
+  try {
+    const history = getLocalHistory();
+    history.unshift({
+      ...record,
+      timestamp: Date.now(),
+      device: navigator.userAgent.slice(0, 100),
+    });
+    // 最多保留20条记录
+    if (history.length > 20) history.pop();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  } catch (e) {
+    console.warn("无法保存历史记录:", e);
+  }
+}
+
+/**
+ * 获取计数器
+ */
+function getCounter() {
+  try {
+    const data = localStorage.getItem(COUNTER_KEY);
+    return data ? parseInt(data, 10) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * 增加计数器
+ */
+function incrementCounter() {
+  try {
+    const count = getCounter() + 1;
+    localStorage.setItem(COUNTER_KEY, String(count));
+    return count;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * 渲染历史记录列表
+ */
+function renderHistoryList() {
+  const container = byId("history-list");
+  if (!container) return;
+
+  const history = getLocalHistory();
+  container.innerHTML = "";
+
+  if (history.length === 0) {
+    container.innerHTML = '<p class="history-empty">暂无历史记录</p>';
+    return;
+  }
+
+  history.forEach((record, idx) => {
+    const item = document.createElement("div");
+    item.className = "history-item";
+    const date = new Date(record.timestamp);
+    const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+    item.innerHTML = `
+      <span class="history-code">${record.code || "—"}</span>
+      <span class="history-name">${record.cn || ""}</span>
+      <span class="history-time">${dateStr}</span>
+    `;
+    container.appendChild(item);
+  });
+}
+
 function byId(id) {
   return document.getElementById(id);
 }
@@ -344,7 +434,7 @@ function renderCandleProgress(total, currentIdx, answerHistory = [], smartChoice
     const el = children[i];
     el.classList.remove("answered", "current", "down", "up-strong");
 
-    if (i < currentIdx && candles[i]) {
+    if (i <= currentIdx && candles[i]) {
       const candle = candles[i];
       const isUp = candle.close >= candle.open;
 
@@ -591,6 +681,16 @@ async function init() {
     lastResult = result;
     lastIdentity = identity;
 
+    // 保存到本地历史记录
+    saveToLocalHistory({
+      code: result.primary?.code,
+      cn: result.primary?.cn,
+      identity: identity,
+    });
+
+    // 增加计数器
+    incrementCounter();
+
     showPage("result");
     requestAnimationFrame(() => {
       renderResult({
@@ -710,6 +810,13 @@ async function init() {
       );
     }, 150),
   );
+
+  // —— 渲染历史记录 ——
+  renderHistoryList();
+  const historyCount = byId("history-count");
+  if (historyCount) {
+    historyCount.textContent = `共 ${getCounter()} 次`;
+  }
 
   document.body.classList.add("app-ready");
 }
