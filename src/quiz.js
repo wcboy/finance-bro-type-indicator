@@ -68,6 +68,12 @@ export function createQuiz(questions, config, onComplete) {
     // 记录首次答题状态（用于回退时保留 K 线）
     firstAnswerHistory: [], // 首次答题的完整历史
     hasGoneBack: false, // 是否曾使用过回退功能
+    // 记录每题作答时间
+    questionStartTime: Date.now(), // 当前题目开始时间
+    allAnswerTimes: {}, // { questionId: timeSpentInMs }
+    testStartTime: Date.now(), // 测试开始时间
+    // 记录所有题目作答（包括 anchor）
+    allQuestionsAnswered: [], // [{ questionId, questionText, optionValue, optionText, timeSpent }]
   }
 
   function currentIndex() {
@@ -99,6 +105,10 @@ export function createQuiz(questions, config, onComplete) {
     state.answerHistory = []
     state.firstAnswerHistory = []
     state.hasGoneBack = false
+    state.questionStartTime = Date.now()
+    state.allAnswerTimes = {}
+    state.testStartTime = Date.now()
+    state.allQuestionsAnswered = []
     if (anchorQs.length === 0) state.phase = 'main'
     if (orderedMain.length === 0 && anchorQs.length === 0) {
       finish()
@@ -110,6 +120,24 @@ export function createQuiz(questions, config, onComplete) {
   function answer(optionValue, originalIdx = null) {
     const q = currentQuestion()
     if (!q) return
+
+    // 计算本题作答时间
+    const timeSpent = Date.now() - state.questionStartTime
+
+    // 获取选项文本
+    const opts = q._shuffledOptions || q.options || []
+    const selectedOpt = opts.find(opt => opt.value === optionValue || opt._originalIdx === originalIdx)
+    const optionText = selectedOpt?.label || ''
+
+    // 记录所有题目作答（包括 anchor）
+    state.allQuestionsAnswered.push({
+      questionId: q.id,
+      questionText: q.text || '',
+      optionValue: optionValue,
+      optionText: optionText,
+      timeSpent: timeSpent,
+      phase: state.phase,
+    })
 
     if (state.phase === 'anchor') {
       state.identity = optionValue
@@ -131,6 +159,9 @@ export function createQuiz(questions, config, onComplete) {
       }
       state.answerHistory.push(answerRecord)
 
+      // 记录作答时间
+      state.allAnswerTimes[q.id] = timeSpent
+
       // 更新首次答题历史：
       // - 如果这道题还没在首次历史中（新题），添加到首次历史
       // - 如果这道题已在首次历史中（回退后重答），不更新首次历史（K线冻结）
@@ -146,6 +177,9 @@ export function createQuiz(questions, config, onComplete) {
         state.phase = 'done'
       }
     }
+
+    // 重置下一题的开始时间
+    state.questionStartTime = Date.now()
 
     if (state.phase === 'done') {
       finish()
@@ -163,6 +197,8 @@ export function createQuiz(questions, config, onComplete) {
     if (state.phase === 'anchor') {
       if (state.anchorIdx === 0) return null
       state.anchorIdx -= 1
+      // 重置当前题开始时间
+      state.questionStartTime = Date.now()
       return currentQuestion()
     }
     if (state.phase === 'main') {
@@ -171,6 +207,8 @@ export function createQuiz(questions, config, onComplete) {
         if (anchorQs.length === 0) return null
         state.phase = 'anchor'
         state.anchorIdx = anchorQs.length - 1
+        // 重置当前题开始时间
+        state.questionStartTime = Date.now()
         return currentQuestion()
       }
       state.mainIdx -= 1
@@ -182,6 +220,8 @@ export function createQuiz(questions, config, onComplete) {
           state.firstAnswerHistory = [...state.answerHistory]
         }
       }
+      // 重置当前题开始时间
+      state.questionStartTime = Date.now()
       return currentQuestion()
     }
     return null
@@ -196,6 +236,11 @@ export function createQuiz(questions, config, onComplete) {
       eggs: pickedEggs,
       // 答题历史供 K 线使用
       answerHistory: state.answerHistory,
+      // 作答时间数据
+      allAnswerTimes: state.allAnswerTimes,
+      totalTime: Date.now() - state.testStartTime,
+      // 所有题目作答记录（包括 anchor）
+      allQuestionsAnswered: state.allQuestionsAnswered,
     })
   }
 

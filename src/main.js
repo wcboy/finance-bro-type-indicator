@@ -609,7 +609,7 @@ async function init() {
     }
   }
 
-  function onComplete({ answers, identity, special, eggs }) {
+  function onComplete({ answers, identity, special, eggs, answerHistory, allAnswerTimes, totalTime, allQuestionsAnswered }) {
     const scores = calcDimensionScores(answers, questions.main);
     const levels = scoresToLevels(
       scores,
@@ -662,14 +662,30 @@ async function init() {
       identity: identity,
     });
 
+    // 构建第一个题目数据（使用 allQuestionsAnswered，包含 anchor）
+    const firstQuestionData = buildFirstQuestionData(allQuestionsAnswered);
+
+    // 构建所有题目作答数据
+    const allAnswersData = buildAllAnswersData(allQuestionsAnswered);
+
     // 上传到 Firebase（管理员可查看）
     uploadResult({
-      code: result.primary?.code,
-      cn: result.primary?.cn,
-      title: result.primary?.title,
-      identity: identity,
-      rarity: result.primary?.rarity,
-      mode: result.mode,
+      firstQuestion: firstQuestionData,
+      allAnswers: allAnswersData,
+      result: {
+        type: result.primary?.code,
+        typeName: result.primary?.cn,
+        title: result.primary?.title,
+        rarity: result.primary?.rarity,
+        mode: result.mode,
+        scores: levels,
+      },
+      meta: {
+        totalTime: totalTime || 0,
+        questionCount: allQuestionsAnswered?.length || 0,
+        deviceType: navigator.userAgent,
+        identity: identity,
+      },
     });
 
     showPage("result");
@@ -689,6 +705,42 @@ async function init() {
         },
       });
     });
+  }
+
+  /**
+   * 构建第一个题目数据
+   */
+  function buildFirstQuestionData(allQuestionsAnswered) {
+    if (!allQuestionsAnswered || allQuestionsAnswered.length === 0) return null;
+
+    const first = allQuestionsAnswered[0];
+    return {
+      questionId: first.questionId,
+      questionText: first.questionText,
+      selectedOption: first.optionValue,
+      selectedOptionText: first.optionText,
+      timeSpent: first.timeSpent,
+    };
+  }
+
+  /**
+   * 构建所有题目作答数据
+   */
+  function buildAllAnswersData(allQuestionsAnswered) {
+    if (!allQuestionsAnswered) return {};
+
+    const result = {};
+    allQuestionsAnswered.forEach((answer, index) => {
+      result[`${index + 1}_${answer.questionId}`] = {
+        questionText: answer.questionText,
+        option: answer.optionValue,
+        optionText: answer.optionText,
+        time: answer.timeSpent,
+        phase: answer.phase,
+      };
+    });
+
+    return result;
   }
 
   quiz = createQuiz(questions, config, onComplete);
