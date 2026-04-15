@@ -7,9 +7,9 @@ A personality test based on stereotypes in the finance industry, developed from 
 ## Background
 
 This project is derived from content analysis of 670 finance satire videos, extracting:
-- 14 independent finance tropes
-- 38 stereotype characteristics
-- 2 core personality archetypes
+- 12 independent finance dimensions (Cognitive/Behavioral/Social)
+- 16 personality stereotypes
+- 1 easter egg personality
 
 Transformed into an interactive personality assessment tool.
 
@@ -17,7 +17,7 @@ Transformed into an interactive personality assessment tool.
 
 - Vite + Vanilla JavaScript
 - No framework dependencies, lightweight implementation
-- PWA support for offline usage
+- Canvas-based radar chart and poster generation
 
 ## Project Structure
 
@@ -26,7 +26,7 @@ finance-bro-type-indicator/
 ├── data/
 │   ├── config.json          # Configuration
 │   ├── dimensions.json      # 12 dimensions (Cognitive/Behavioral/Social)
-│   ├── questions.json       # 30 test questions
+│   ├── questions.json       # 19 main questions + 1 easter egg
 │   ├── types.json           # 16 personality types + Easter eggs
 │   └── interpretations/     # Dimension interpretations
 ├── src/
@@ -69,7 +69,6 @@ finance-bro-type-indicator/
 | Code | Personality | Subtitle |
 |------|-------------|----------|
 | CHOSEN | Chosen Nepotist | Ultimate winner of finance universe |
-| UNCERT | Certificate Denier | Pioneer of anti-certification movement |
 | NPC | Finance NPC | Unclassifiable hidden variable |
 
 ## Getting Started

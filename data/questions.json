@@ -275,21 +275,6 @@
         { "label": "实习转正，一步一步积累的", "value": 3 }
       ],
       "triggerOn": { "value": 1, "forceCode": "CHOSEN" }
-    },
-    {
-      "id": "egg_cert",
-      "special": true,
-      "kind": "easter_egg",
-      "scenario": "neutral",
-      "smartChoice": 3,
-      "smartNote": "精准投资，不盲目考证",
-      "text": "最后一题（彩蛋）——你对考证的态度是？",
-      "options": [
-        { "label": "考了好多证，感觉没啥用，都是骗钱的", "value": 1 },
-        { "label": "有计划地考，证多不压身", "value": 2 },
-        { "label": "只考和工作直接相关的，不追求证书数量", "value": 3 }
-      ],
-      "triggerOn": { "value": 1, "forceCode": "UNCERT" }
     }
   ]
 }

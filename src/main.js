@@ -217,9 +217,13 @@ function renderCandleProgress(total, currentIdx, answerHistory = [], smartChoice
     currentPrice = candles[i].close;
   }
 
-  // 计算新增蜡烛
-  while (candles.length < answerHistory.length) {
-    const history = answerHistory[candles.length];
+  // 计算新增蜡烛（使用首次答题历史，但K线显示到当前进度）
+  // currentIdx + 1 = 当前答题进度（已答题数）
+  // answerHistory = 首次答题历史（K线数据源）
+  const targetCandleCount = currentIdx + 1;
+  while (candles.length < targetCandleCount) {
+    // 使用首次答题历史的数据，如果超出则用当前答题历史
+    const history = answerHistory[candles.length] || answerHistory[answerHistory.length - 1];
     const smartChoice = smartChoiceSequence[candles.length] || 2;
 
     // 开盘价 = 上一根收盘价 + 小幅跳空（随机）
