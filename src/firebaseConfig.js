@@ -26,7 +26,7 @@ const db = getFirestore(app);
  */
 async function getUserIP() {
   try {
-    const response = await fetch('https://api.ipify.org?format=json');
+    const response = await fetch('https://ipinfo.io/json');
     const data = await response.json();
     return data.ip || 'unknown';
   } catch (error) {
