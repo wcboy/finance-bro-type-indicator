@@ -128,16 +128,16 @@ function initImageMarquee() {
   const track = byId("marquee-track");
   if (!track) return;
 
-  // 图片列表（与data/FrontImage/seprated/目录下的文件对应）
+  // 图片列表
   const images = [
-    "Screenshot 2026-04-15 at 22.42.36.png",
-    "Screenshot 2026-04-15 at 22.42.49.png",
-    "Screenshot 2026-04-15 at 22.42.58.png",
-    "Screenshot 2026-04-15 at 22.43.08.png",
-    "Screenshot 2026-04-15 at 22.43.25.png",
-    "Screenshot 2026-04-15 at 22.43.34.png",
-    "Screenshot 2026-04-15 at 22.43.42.png",
-    "Screenshot 2026-04-15 at 22.43.52.png",
+    "slide-1.png",
+    "slide-2.png",
+    "slide-3.png",
+    "slide-4.png",
+    "slide-5.png",
+    "slide-6.png",
+    "slide-7.png",
+    "slide-8.png",
   ];
 
   const basePath = "data/FrontImage/seprated/";
