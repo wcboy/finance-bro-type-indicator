@@ -458,6 +458,15 @@ body:not(.app-ready) #app {
   background: rgba(26, 20, 10, 0.04);
   border-radius: var(--radius-md);
   font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.history-item:hover {
+  background: rgba(26, 20, 10, 0.08);
+  transform: translateX(4px);
+}
+.history-item:active {
+  background: rgba(26, 20, 10, 0.12);
 }
 .history-code {
   font-family: var(--font-stamp);

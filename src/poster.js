@@ -211,14 +211,15 @@ function drawRadar(ctx, cx, cy, radius, dimOrder, levels, defs, theme) {
     ctx.fill();
   }
 
-  // 标签（emoji + CJK 名）
+  // 标签（仅显示维度名称，不使用emoji）
   setFont(ctx, 20, 700, FONT_CJK_SANS);
   ctx.fillStyle = theme.ink;
   ctx.textBaseline = "middle";
   for (let i = 0; i < N; i++) {
     const a = (Math.PI * 2 * i) / N - Math.PI / 2;
-    const def = defs[dimOrder[i]] || { name: dimOrder[i], emoji: "" };
-    const label = `${def.emoji || ""} ${def.name || dimOrder[i]}`.trim();
+    const def = defs[dimOrder[i]] || { name: dimOrder[i] };
+    // 移除emoji，只显示维度名称
+    const label = def.name || dimOrder[i];
     const lx = cx + Math.cos(a) * (radius + 30);
     const ly = cy + Math.sin(a) * (radius + 30);
     const cos = Math.cos(a);

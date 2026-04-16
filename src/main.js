@@ -61,8 +61,9 @@ function saveToLocalHistory(record) {
 
 /**
  * 渲染历史记录列表
+ * @param {Function} onHistoryClick - 点击历史记录的回调
  */
-function renderHistoryList() {
+function renderHistoryList(onHistoryClick) {
   const container = byId("history-list");
   if (!container) return;
 
@@ -84,6 +85,12 @@ function renderHistoryList() {
       <span class="history-name">${record.cn || ""}</span>
       <span class="history-time">${dateStr}</span>
     `;
+    // 点击历史记录显示分享卡片
+    item.addEventListener("click", () => {
+      if (onHistoryClick) {
+        onHistoryClick(record);
+      }
+    });
     container.appendChild(item);
   });
 }
@@ -656,10 +663,15 @@ async function init() {
     lastIdentity = identity;
 
     // 保存到本地历史记录（用户自己查看）
+    // 保存完整的levels数据以便生成分享卡片
     saveToLocalHistory({
       code: result.primary?.code,
       cn: result.primary?.cn,
       identity: identity,
+      // 保存完整数据用于生成分享卡片
+      primary: result.primary,
+      levels: levels,
+      mode: result.mode,
     });
 
     // 构建第一个题目数据（使用 allQuestionsAnswered，包含 anchor）
@@ -845,7 +857,36 @@ async function init() {
   );
 
   // —— 渲染历史记录 ——
-  renderHistoryList();
+  // 历史记录点击处理函数
+  async function handleHistoryClick(record) {
+    if (!record.primary || !record.levels) {
+      console.warn("历史记录数据不完整，无法生成分享卡片");
+      return;
+    }
+    openPosterModal();
+    posterImg.style.display = "none";
+    posterLoading.style.display = "";
+    posterLoading.textContent = "生成分享卡…";
+    try {
+      const { renderPoster } = await import("./poster.js");
+      const dataUrl = await renderPoster({
+        primary: record.primary,
+        levels: record.levels,
+        identity: record.identity || "junior",
+        dimensions,
+        mode: record.mode || "normal",
+      });
+      posterImg.src = dataUrl;
+      posterImg.style.display = "";
+      posterLoading.style.display = "none";
+      posterDownload.href = dataUrl;
+    } catch (err) {
+      console.error(err);
+      posterLoading.textContent = "生成失败：" + (err?.message || "未知错误");
+    }
+  }
+
+  renderHistoryList(handleHistoryClick);
 
   // 显示本地历史记录数量
   const historyCount = byId("history-count");
