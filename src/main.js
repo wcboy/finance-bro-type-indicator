@@ -859,10 +859,35 @@ async function init() {
   // —— 渲染历史记录 ——
   // 历史记录点击处理函数
   async function handleHistoryClick(record) {
-    if (!record.primary || !record.levels) {
-      console.warn("历史记录数据不完整，无法生成分享卡片");
-      return;
+    let primary = record.primary;
+    let levels = record.levels;
+    let mode = record.mode || "normal";
+
+    // 如果历史记录数据不完整，从 types 中查找
+    if (!primary || !levels) {
+      // 从 types.standard 中查找对应的人格类型
+      const found = types.standard.find(t => t.code === record.code);
+      if (found) {
+        primary = found;
+        // 从 pattern 生成默认 levels
+        levels = {};
+        if (found.pattern) {
+          const patternArr = found.pattern.split("-");
+          dimensions.order.forEach((dim, idx) => {
+            levels[dim] = patternArr[idx] || "M";
+          });
+        } else {
+          // 没有 pattern，全部设为 M
+          dimensions.order.forEach(dim => {
+            levels[dim] = "M";
+          });
+        }
+      } else {
+        console.warn("历史记录数据不完整且无法找到对应人格类型");
+        return;
+      }
     }
+
     openPosterModal();
     posterImg.style.display = "none";
     posterLoading.style.display = "";
@@ -870,11 +895,11 @@ async function init() {
     try {
       const { renderPoster } = await import("./poster.js");
       const dataUrl = await renderPoster({
-        primary: record.primary,
-        levels: record.levels,
+        primary: primary,
+        levels: levels,
         identity: record.identity || "junior",
         dimensions,
-        mode: record.mode || "normal",
+        mode: mode,
       });
       posterImg.src = dataUrl;
       posterImg.style.display = "";
