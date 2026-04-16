@@ -6,6 +6,7 @@
  * 2. 阈值支持动态计算：按维度被测次数 n 推出 L/H 阈值
  * 3. Pattern 支持 `"H-H-H-H-L-H-H-H-L-L-L-H"` 或 SBTI 式连写
  * 4. maxDistance 从 `dimensions.order.length * 2` 推导
+ * 5. 支持选项级别的维度得分覆盖（dimScores 字段）
  */
 
 const LEVEL_NUM = { L: 1, M: 2, H: 3 }
@@ -19,17 +20,44 @@ function questionDims(q) {
 
 /**
  * 按维度求和：每道题的分值累加到它测量的每一个维度
- * @param {Object} answers    { q1: 2, q2: 3, ... }
+ * 支持选项级别的 dimScores 覆盖
+ * @param {Object} answers    { q1: 2, q2: 3, ... } 或 { q1: { optionIdx: 2 }, ... }
  * @param {Array}  questions  题目数组（main）
  * @returns {Object} { FOCUS: 5, MEMORY: 10, ... }
  */
 export function calcDimensionScores(answers, questions) {
   const scores = {}
   for (const q of questions) {
-    const v = answers[q.id]
-    if (v == null) continue
-    for (const dim of questionDims(q)) {
-      scores[dim] = (scores[dim] || 0) + v
+    const answer = answers[q.id]
+    if (answer == null) continue
+
+    // 获取选中的选项索引（兼容旧格式）
+    let selectedIdx = typeof answer === 'object' ? answer.optionIdx : null
+    let selectedValue = typeof answer === 'number' ? answer : answer.value
+
+    // 查找选中的选项
+    const opts = q.options || []
+    let selectedOpt = null
+    if (selectedIdx != null) {
+      selectedOpt = opts[selectedIdx]
+    } else {
+      // 旧格式：通过 value 查找
+      selectedOpt = opts.find(opt => opt.value === selectedValue)
+    }
+
+    // 计算各维度得分
+    const dims = questionDims(q)
+    if (selectedOpt?.dimScores) {
+      // 新格式：使用选项级别的维度得分
+      for (const [dim, score] of Object.entries(selectedOpt.dimScores)) {
+        scores[dim] = (scores[dim] || 0) + score
+      }
+    } else {
+      // 旧格式：value 累加到所有维度
+      const v = selectedOpt?.value ?? selectedValue
+      for (const dim of dims) {
+        scores[dim] = (scores[dim] || 0) + v
+      }
     }
   }
   return scores
@@ -37,12 +65,30 @@ export function calcDimensionScores(answers, questions) {
 
 /**
  * 统计每个维度被多少道题测量
+ * 支持选项级别的维度得分
  */
 export function countDimensionHits(questions) {
   const hits = {}
   for (const q of questions) {
-    for (const dim of questionDims(q)) {
-      hits[dim] = (hits[dim] || 0) + 1
+    // 检查是否有选项使用 dimScores
+    const hasDimScores = (q.options || []).some(opt => opt.dimScores)
+
+    if (hasDimScores) {
+      // 新格式：统计所有选项中涉及的维度
+      const allDims = new Set()
+      for (const opt of q.options) {
+        if (opt.dimScores) {
+          Object.keys(opt.dimScores).forEach(dim => allDims.add(dim))
+        }
+      }
+      for (const dim of allDims) {
+        hits[dim] = (hits[dim] || 0) + 1
+      }
+    } else {
+      // 旧格式：使用 dims 数组
+      for (const dim of questionDims(q)) {
+        hits[dim] = (hits[dim] || 0) + 1
+      }
     }
   }
   return hits
