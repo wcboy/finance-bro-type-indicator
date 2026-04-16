@@ -246,11 +246,14 @@ export function createQuiz(questions, config, onComplete) {
 
   function progress() {
     const idx = currentIndex()
+    // 显示已答题数，而非当前题号
+    // 第一道题未作答时显示 0/21，作答后显示 1/21
+    const answeredCount = state.phase === 'anchor' ? state.anchorIdx : anchorQs.length + state.mainIdx
     return {
-      current: Math.min(idx + 1, totalQuestions),
+      current: answeredCount,
       total: totalQuestions,
       percent: Math.round(
-        (Math.min(idx, totalQuestions) / Math.max(1, totalQuestions)) * 100,
+        (Math.min(answeredCount, totalQuestions) / Math.max(1, totalQuestions)) * 100,
       ),
       phase: state.phase,
     }
