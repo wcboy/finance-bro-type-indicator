@@ -732,6 +732,125 @@ body:not(.app-ready) #app {
 }
 .progress-text strong { color: var(--rouge-ink); }
 
+/* —— 账户 & 交易面板（答题期间可操作）—— */
+.trade-panel {
+  margin: 0.4rem 0 1rem;
+  padding: 0.75rem 0.85rem;
+  background: rgba(26, 20, 10, 0.045);
+  border: 1px solid rgba(26, 20, 10, 0.12);
+  border-radius: var(--radius-md);
+}
+.trade-status {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  margin-bottom: 0.6rem;
+}
+.trade-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.trade-col-total { align-items: flex-end; }
+.trade-k {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.trade-v {
+  font-weight: 700;
+  color: var(--ink-black);
+  font-size: 0.86rem;
+  line-height: 1.1;
+}
+.trade-sub {
+  font-size: 0.66rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.trade-pnl {
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+.trade-pnl.up { color: #c93a3a; }    /* A 股惯例：红涨 */
+.trade-pnl.down { color: #0c8f87; }  /* 绿跌 */
+
+.trade-actions {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.trade-btn {
+  appearance: none;
+  padding: 0.48rem 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+  border: 1.2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+.trade-btn.buy {
+  background: #fddede;
+  color: #8f1f1f;
+  border-color: rgba(201, 58, 58, 0.55);
+}
+.trade-btn.buy:hover:not(:disabled) { background: #f9c7c7; }
+.trade-btn.sell {
+  background: #d5f2f0;
+  color: #0a5a55;
+  border-color: rgba(13, 143, 135, 0.55);
+}
+.trade-btn.sell:hover:not(:disabled) { background: #bfe8e4; }
+.trade-btn.hold {
+  background: #f3eedc;
+  color: var(--ink-black);
+  border-color: rgba(26, 20, 10, 0.2);
+}
+.trade-btn.hold:hover:not(:disabled) { background: #ebe4cd; }
+.trade-btn.trade-btn-emphasis {
+  box-shadow: 0 1.5px 0 rgba(26, 20, 10, 0.18);
+}
+.trade-btn:active:not(:disabled) { transform: translateY(1px); }
+.trade-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.trade-btn.trade-btn-flash {
+  animation: tradeFlash 0.3s ease;
+}
+@keyframes tradeFlash {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.95); filter: brightness(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* 窄屏：7 个按钮过挤 → 4 + 3 两行 */
+@media (max-width: 480px) {
+  .trade-actions {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .trade-btn {
+    padding: 0.52rem 0.12rem;
+    font-size: 0.7rem;
+  }
+  .trade-status {
+    grid-template-columns: repeat(2, 1fr);
+    font-size: 0.76rem;
+  }
+  .trade-col-total { align-items: flex-start; }
+}
+
 /* 问题区 */
 .question-area { margin: 1.25rem 0 1.5rem; }
 .question-hint {

@@ -21,6 +21,7 @@ import {
   renderHistoryList,
 } from "./history.js";
 import { showBackPopup } from "./modal.js";
+import { createPortfolio } from "./portfolio.js";
 import "./style.css";
 
 // 静态导入数据，Vite 打包 tree-shake
@@ -253,27 +254,16 @@ function renderCandleProgress(total, currentIdx, answerHistory = [], smartChoice
       const localVolatility = priceState.volatilityBase * (0.5 + Math.random());  // 本题波动倍数
       const localBias = (Math.random() - 0.5) * 4;  // 本题随机偏移
 
-      // === 聪明决策影响 ===
-      const diff = Math.abs(val - smartChoice);
-      let decisionDelta = 0;
-
-      if (diff === 0) {
-        // 选对：大概率涨，但涨幅随机
-        decisionDelta = (4 + Math.random() * 10) * localVolatility;
-        // 小概率"利好出尽是利空"
-        if (localRandom > 0.85) {
-          decisionDelta = -decisionDelta * 0.3;
-        }
-      } else if (diff === 1) {
-        // 差一档：不确定方向
-        decisionDelta = (Math.random() - 0.45) * 10 * localVolatility;
-      } else {
-        // 选错：大概率跌，但跌幅随机
-        decisionDelta = -(4 + Math.random() * 10) * localVolatility;
-        // 小概率"利空出尽是利好"
-        if (localRandom > 0.88) {
-          decisionDelta = -decisionDelta * 0.3;
-        }
+      // === 态度驱动的方向偏置 ===
+      // 选项 value ∈ [1,4]：按顺序通常从"被动/怂"到"聪明/自信"
+      // value=1 大概率跌，value=4 大概率涨，value=2/3 在中间
+      // 叠加原有随机幅度，保留小概率反转（利好出尽 / 利空反弹）
+      const attitude = typeof val === "number" ? val : 2.5; // fallback
+      const attitudeBias = attitude - 2.5; // -1.5 .. +1.5
+      let decisionDelta = (attitudeBias * 5 + (Math.random() - 0.5) * 8) * localVolatility;
+      // 10% 概率反转（基本面 vs 情绪面错配）
+      if (localRandom > 0.9) {
+        decisionDelta = -decisionDelta * 0.5;
       }
 
       // === 市场情绪影响 ===
@@ -419,6 +409,13 @@ async function init() {
     const klineCandleCount = firstHistory.length;
     priceState = renderCandleProgress(progress.total, klineCandleCount - 1, firstHistory, quiz.getSmartChoiceSequence(), priceState);
 
+    // 把最新收盘价喂给 portfolio，并刷新交易面板显示
+    const latestPrice = currentPriceFromState();
+    if (portfolio && latestPrice != null) {
+      portfolio.updatePrice(latestPrice);
+    }
+    updatePortfolioDisplay();
+
     setText(progressText, `${progress.current} / ${progress.total}`);
     setText(
       caseId,
@@ -488,8 +485,95 @@ async function init() {
   let lastResult = null;
   let lastIdentity = "junior";
   let priceState = null; // K 线价格状态
+  let portfolio = null; // 账户仓位（每次测试新建）
   let hasShownBackPopup = false; // 是否已显示过回退提示弹窗
   let backBtn = byId("btn-back"); // 返回上一题按钮
+
+  // 数字格式化工具（千分位 / 固定两位小数）
+  function fmtMoney(n) {
+    if (!isFinite(n)) return "—";
+    return Math.round(n).toLocaleString("en-US");
+  }
+  function fmtPct(n) {
+    if (!isFinite(n)) return "—";
+    const s = n >= 0 ? "+" : "";
+    return `${s}${n.toFixed(2)}%`;
+  }
+
+  function currentPriceFromState() {
+    if (!priceState || !priceState.candles?.length) return null;
+    return priceState.candles[priceState.candles.length - 1].close;
+  }
+
+  function updatePortfolioDisplay() {
+    if (!portfolio) return;
+    const s = portfolio.state;
+    const panel = byId("trade-panel");
+    if (!panel) return;
+    const hasPrice = s.lastPrice != null && s.lastPrice > 0;
+    const v = portfolio.value();
+    const pct = ((v - s.initialCash) / s.initialCash) * 100;
+
+    setText(byId("port-cash"), "¥" + fmtMoney(s.cash));
+    setText(byId("port-shares"), s.shares > 0 ? s.shares.toFixed(2) : "0");
+    setText(byId("port-mkt-val"), hasPrice ? "¥" + fmtMoney(s.shares * s.lastPrice) : "开盘前");
+    setText(byId("port-price"), hasPrice ? s.lastPrice.toFixed(2) : "—");
+    setText(byId("port-total"), "¥" + fmtMoney(v));
+    const pnlEl = byId("port-pnl");
+    if (pnlEl) {
+      pnlEl.textContent = hasPrice ? fmtPct(pct) : "+0.00%";
+      pnlEl.classList.toggle("up", pct >= 0);
+      pnlEl.classList.toggle("down", pct < 0);
+    }
+
+    // 按钮可用性：无价格时全禁用；否则按持仓状态细化
+    const hasCash = s.cash > 0.5;
+    const hasPos = s.shares > 1e-6;
+    panel.querySelectorAll("[data-action='buy'], [data-action='allIn']").forEach((b) => {
+      b.disabled = !hasPrice || !hasCash;
+    });
+    panel.querySelectorAll("[data-action='sell'], [data-action='clear']").forEach((b) => {
+      b.disabled = !hasPrice || !hasPos;
+    });
+    const holdBtn = panel.querySelector("[data-action='hold']");
+    if (holdBtn) holdBtn.disabled = !hasPrice;
+  }
+
+  function wireTradingPanel() {
+    const panel = byId("trade-panel");
+    if (!panel || panel.dataset.wired === "1") return;
+    panel.dataset.wired = "1";
+    panel.addEventListener("click", (e) => {
+      const btn = e.target.closest(".trade-btn");
+      if (!btn || btn.disabled) return;
+      if (!portfolio) return;
+      const action = btn.dataset.action;
+      const ratio = parseFloat(btn.dataset.ratio);
+      let res;
+      switch (action) {
+        case "buy":
+          res = portfolio.buy(ratio);
+          break;
+        case "sell":
+          res = portfolio.sell(ratio);
+          break;
+        case "allIn":
+          res = portfolio.allIn();
+          break;
+        case "clear":
+          res = portfolio.clear();
+          break;
+        case "hold":
+          res = portfolio.hold();
+          break;
+      }
+      if (res?.ok) {
+        btn.classList.add("trade-btn-flash");
+        setTimeout(() => btn.classList.remove("trade-btn-flash"), 260);
+        updatePortfolioDisplay();
+      }
+    });
+  }
 
   function doBack() {
     const prev = quiz.goBack();
@@ -529,7 +613,8 @@ async function init() {
       renderQuestion(next, quiz.progress());
       updateBackButtonVisibility();
     } else {
-      // 最后一题答完后，更新最后一根蜡烛
+      // 最后一题答完：先把最后一根蜡烛画出来、喂 portfolio 最新价，
+      // 然后再 finalize（触发 onComplete 时 portfolio 已经是终态）
       const firstHistory = quiz.getFirstAnswerHistory();
       const klineCandleCount = firstHistory.length;
       priceState = renderCandleProgress(
@@ -539,6 +624,12 @@ async function init() {
         quiz.getSmartChoiceSequence(),
         priceState
       );
+      const finalPrice = currentPriceFromState();
+      if (portfolio && finalPrice != null) {
+        portfolio.updatePrice(finalPrice);
+      }
+      updatePortfolioDisplay();
+      quiz.finalize();
     }
   }
 
@@ -586,6 +677,9 @@ async function init() {
 
     // 保存到本地历史记录（用户自己查看）
     // 保存完整的levels数据以便生成分享卡片
+    // 账户最终收益快照（portfolio 已由 handleAnswer 在 finalize 前喂入最新价）
+    const portfolioSummary = portfolio ? portfolio.summary() : null;
+
     saveToLocalHistory({
       code: result.primary?.code,
       cn: result.primary?.cn,
@@ -595,7 +689,11 @@ async function init() {
       levels: levels,
       mode: result.mode,
       egg: result.egg || null,
+      portfolio: portfolioSummary,
     });
+
+    // 把 portfolioSummary 挂到 result，供 result.js 渲染 P&L 板块
+    result.portfolio = portfolioSummary;
 
     // 构建第一个题目数据（使用 allQuestionsAnswered，包含 anchor）
     const firstQuestionData = buildFirstQuestionData(allQuestionsAnswered);
@@ -690,11 +788,14 @@ async function init() {
   if (btnStart) {
     btnStart.addEventListener("click", () => {
       priceState = null; // 重置 K 线价格
+      portfolio = createPortfolio(30000); // 每次测试新账户
+      wireTradingPanel();
       hasShownBackPopup = false; // 重置弹窗状态
       const first = quiz.start();
       showPage("quiz");
       renderQuestion(first, quiz.progress());
       updateBackButtonVisibility();
+      updatePortfolioDisplay();
     });
   }
 
@@ -702,11 +803,14 @@ async function init() {
   if (btnRestart) {
     btnRestart.addEventListener("click", () => {
       priceState = null; // 重置 K 线价格
+      portfolio = createPortfolio(30000); // 每次测试新账户
+      wireTradingPanel();
       hasShownBackPopup = false; // 重置弹窗状态
       const first = quiz.start();
       showPage("quiz");
       renderQuestion(first, quiz.progress());
       updateBackButtonVisibility();
+      updatePortfolioDisplay();
     });
   }
 

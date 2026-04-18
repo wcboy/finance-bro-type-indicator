@@ -207,11 +207,19 @@ export function createQuiz(questions, config, onComplete) {
     state.questionStartTime = Date.now()
 
     if (state.phase === 'done') {
-      finish()
+      // 不再自动 finish —— 让 caller 在最后一题结束后做完收尾工作
+      // （如绘制最后一根蜡烛 / 更新 portfolio 收盘价）再调 finalize()
       return null
     }
 
     return currentQuestion()
+  }
+
+  /** 手动结束测试，触发 onComplete 回调 */
+  function finalize() {
+    if (state.phase !== 'done') return false
+    finish()
+    return true
   }
 
   /**
@@ -317,6 +325,7 @@ export function createQuiz(questions, config, onComplete) {
   return {
     start,
     answer,
+    finalize,
     goBack,
     progress,
     currentQuestion,
