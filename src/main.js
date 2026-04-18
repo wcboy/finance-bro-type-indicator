@@ -444,6 +444,7 @@ async function init() {
 
     // 获取当前题目的已选答案（回退后显示之前的选择）
     const currentAnswer = quiz.getCurrentAnswer();
+    const isRevisit = !!currentAnswer;
 
     opts.forEach((opt, idx) => {
       const btn = document.createElement("button");
@@ -454,19 +455,21 @@ async function init() {
       // 存储原始 index 供 K 线使用
       const originalIdx = opt._originalIdx;
 
-      // 如果有之前的答案，高亮显示
+      // 回退后重访：之前选过的那个选项显示灰色 SIGNED（已签署）
       if (currentAnswer && currentAnswer.originalIdx === originalIdx) {
-        btn.classList.add("option-selected");
+        btn.classList.add("option-signed");
       }
 
       btn.addEventListener("click", () => {
         if (btn.dataset.locked === "1") return;
         btn.dataset.locked = "1";
-        // 锁全部
+        // 锁全部；同时清除其它选项的 signed 旧痕（用户已重新选）
         Array.from(optionsWrap.children).forEach((c) => {
           c.dataset.locked = "1";
+          c.classList.remove("option-signed");
         });
-        btn.classList.add("option-selected");
+        // 首次作答用 SIGNED；回退后重选用 UPDATED（醒目区分）
+        btn.classList.add(isRevisit ? "option-updated" : "option-selected");
         // 微振动（Android 可用）
         if (navigator.vibrate)
           try {

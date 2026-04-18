@@ -820,6 +820,49 @@ body:not(.app-ready) #app {
   background: rgba(255, 255, 255, 0.6);
   animation: stampDown 0.4s cubic-bezier(0.5, -0.2, 0.5, 1.4) both;
 }
+
+/* 回退后重访这题：之前选过的那个选项 —— 灰色 SIGNED（褪色的旧签） */
+.option.option-signed {
+  background: #f3eedc;
+  border-color: rgba(26, 20, 10, 0.35);
+  opacity: 0.78;
+}
+.option.option-signed::after {
+  content: "SIGNED";
+  position: absolute;
+  right: -6px;
+  top: -10px;
+  font-family: var(--font-stamp);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: rgba(26, 20, 10, 0.55);
+  border: 2.5px solid rgba(26, 20, 10, 0.45);
+  padding: 3px 8px;
+  transform: rotate(-9deg);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* 回退后重新作答的新选项 —— 高亮 UPDATED（覆盖旧签） */
+.option.option-updated {
+  background: #ffe7c2;
+  border-color: var(--rouge-ink);
+  animation: stampIn 0.32s cubic-bezier(0.5, -0.3, 0.3, 1.6) both;
+}
+.option.option-updated::after {
+  content: "UPDATED";
+  position: absolute;
+  right: -6px;
+  top: -10px;
+  font-family: var(--font-stamp);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--rouge);
+  border: 2.5px solid var(--rouge);
+  padding: 3px 8px;
+  transform: rotate(-9deg);
+  background: rgba(255, 255, 255, 0.6);
+  animation: stampDown 0.4s cubic-bezier(0.5, -0.2, 0.5, 1.4) both;
+}
 @keyframes stampIn {
   0%   { transform: scale(1); }
   30%  { transform: scale(0.98); }
@@ -1505,4 +1548,5 @@ body:not(.app-ready) #app {
   .ticker-track { animation: none; }
   .candle { transition: none; }
   .option.option-selected::after { animation: none; }
+  .option.option-updated::after { animation: none; }
 }
