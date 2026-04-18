@@ -239,6 +239,7 @@ export async function renderPoster({
   identity,
   dimensions,
   mode = "normal",
+  portfolio = null,
 }) {
   // 等字体加载完再画
   if (document.fonts && document.fonts.ready) {
@@ -647,6 +648,94 @@ export async function renderPoster({
   ctx.restore();
 
   cursorY = cpY + CP_H + 28;
+
+  /* ========== §10.5 投资账户结算（有 portfolio 数据才画）========== */
+  if (portfolio) {
+    const pnlBoxH = 130;
+    const pnlY = cursorY;
+    const gain = (portfolio.returnPct || 0) >= 0;
+    const accentColor = gain ? "#c93a3a" : "#0a8f87"; // 红涨绿跌
+    // 外框
+    ctx.strokeStyle = theme.rougeInk;
+    ctx.lineWidth = 1.5;
+    roundRect(ctx, LEFT, pnlY, W - 2 * LEFT, pnlBoxH, 14);
+    ctx.stroke();
+
+    // 标题
+    setFont(ctx, 18, 700, FONT_MONO);
+    ctx.fillStyle = theme.rougeInk;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    const titleText = "— 投资账户结算 · P&L —";
+    // 画标题外框（盖在虚线上）
+    const titleW = ctx.measureText(titleText).width + 24;
+    ctx.fillStyle = theme.bg;
+    ctx.fillRect(W / 2 - titleW / 2, pnlY - 10, titleW, 20);
+    ctx.fillStyle = theme.rougeInk;
+    ctx.fillText(titleText, W / 2, pnlY - 9);
+
+    // 左栏：账户净值（大字）+ 收益率
+    const leftColX = LEFT + 32;
+    setFont(ctx, 14, 600, FONT_MONO);
+    ctx.fillStyle = theme.inkDim;
+    ctx.textAlign = "left";
+    ctx.fillText("FINAL VALUE", leftColX, pnlY + 22);
+
+    setFont(ctx, 40, 800, FONT_DISPLAY_ASCII);
+    ctx.fillStyle = theme.ink;
+    const finalValStr = "¥" + Math.round(portfolio.finalValue || 0).toLocaleString("en-US");
+    ctx.fillText(finalValStr, leftColX, pnlY + 40);
+
+    setFont(ctx, 24, 800, FONT_DISPLAY_ASCII);
+    ctx.fillStyle = accentColor;
+    const pctStr =
+      (portfolio.returnPct >= 0 ? "+" : "") +
+      (portfolio.returnPct || 0).toFixed(2) +
+      "%";
+    ctx.fillText(pctStr, leftColX, pnlY + 86);
+
+    // 右栏：初始 / 峰值 / 操作
+    const rightColX = W - LEFT - 280;
+    setFont(ctx, 13, 600, FONT_MONO);
+    ctx.fillStyle = theme.inkDim;
+    ctx.textAlign = "left";
+    ctx.fillText("INITIAL", rightColX, pnlY + 22);
+    ctx.fillText("PEAK", rightColX + 110, pnlY + 22);
+    ctx.fillText("OPS", rightColX + 210, pnlY + 22);
+
+    setFont(ctx, 18, 700, FONT_DISPLAY_ASCII);
+    ctx.fillStyle = theme.ink;
+    ctx.fillText(
+      "¥" + Math.round(portfolio.initialCash || 30000).toLocaleString("en-US"),
+      rightColX,
+      pnlY + 44,
+    );
+    ctx.fillText(
+      "¥" + Math.round(portfolio.peakValue || 0).toLocaleString("en-US"),
+      rightColX + 110,
+      pnlY + 44,
+    );
+    ctx.fillText(String(portfolio.tradeCount || 0), rightColX + 210, pnlY + 44);
+
+    // 右栏底部小评：根据涨跌定短 label
+    setFont(ctx, 15, 700, FONT_CJK_SANS);
+    ctx.fillStyle = accentColor;
+    const ribbon =
+      portfolio.returnPct >= 30
+        ? "高光时刻"
+        : portfolio.returnPct >= 5
+          ? "稳步上扬"
+          : portfolio.returnPct >= 0
+            ? "小幅盈利"
+            : portfolio.returnPct >= -10
+              ? "温和回调"
+              : portfolio.returnPct >= -20
+                ? "账户承压"
+                : "爆仓预警";
+    ctx.fillText(ribbon, rightColX, pnlY + 86);
+
+    cursorY = pnlY + pnlBoxH + 30;
+  }
 
   /* ========== §11. QR + 分享信息（最底） ========== */
   const qrSize = 174;

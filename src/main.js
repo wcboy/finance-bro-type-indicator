@@ -844,6 +844,7 @@ async function init() {
         identity: lastIdentity,
         dimensions,
         mode: lastResult.mode,
+        portfolio: lastResult.portfolio || null,
       });
       posterImg.src = dataUrl;
       posterImg.style.display = "";
@@ -927,6 +928,7 @@ async function init() {
         identity: record.identity || "junior",
         dimensions,
         mode: mode,
+        portfolio: record.portfolio || null,
       });
       posterImg.src = dataUrl;
       posterImg.style.display = "";

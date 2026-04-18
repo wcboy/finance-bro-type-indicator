@@ -26,23 +26,37 @@ const KICKER_BY_MODE = {
   egg: "HIDDEN FILE · 彩蛋档案",
 };
 
-/** 根据收益率生成评论 */
-function getKlineComment(returnRate, maxDrawdown, sharpe) {
-  if (returnRate >= 30) {
-    return "🏆 巴菲特看了都想加你微信。这收益率，建议直接成立私募。";
-  } else if (returnRate >= 15) {
-    return "📈 优秀！你的决策逻辑接近专业投资者水平，就是运气差了点。";
-  } else if (returnRate >= 5) {
-    return "✅ 稳健型选手，不求暴富但求不亏，适合做固收研究员。";
-  } else if (returnRate >= 0) {
-    return "😐 勉强跑赢余额宝，建议少看盘、多看书、多研究基本面。";
-  } else if (returnRate >= -10) {
-    return "📉 这波操作...怎么说呢，市场有风险，你也有风险。";
-  } else if (returnRate >= -20) {
-    return "💀 已触发证监会异常交易监控预警。建议冷静期后重新开户。";
+/** 根据收益率与操作次数生成评语（portfolio 版）*/
+function getPortfolioComment(returnPct, tradeCount, holdCount) {
+  const opsHint =
+    tradeCount === 0 && holdCount === 0
+      ? "全程没动一下，纯 beta 打法。"
+      : tradeCount >= 12
+        ? `${tradeCount} 次买卖，手还是太痒了。`
+        : tradeCount <= 2
+          ? "佛系打法，交给时间。"
+          : "";
+  if (returnPct >= 30) {
+    return `巴菲特看了都想加你微信。${opsHint}`;
+  } else if (returnPct >= 15) {
+    return `决策逻辑接近专业 PM 水平。${opsHint}`;
+  } else if (returnPct >= 5) {
+    return `稳健型选手，适合做固收研究员。${opsHint}`;
+  } else if (returnPct >= 0) {
+    return `勉强跑赢余额宝。${opsHint}`;
+  } else if (returnPct >= -10) {
+    return `这波操作……市场有风险，你也有风险。${opsHint}`;
+  } else if (returnPct >= -20) {
+    return `触发证监会异常交易监控预警。${opsHint}`;
   } else {
-    return "🚨 你的账户已被证监会标记为「重点关注对象」。建议转行做反向指标。";
+    return `账户已被标记为「反向指标」候选。${opsHint}`;
   }
+}
+
+/** 千分位 */
+function fmtMoney(n) {
+  if (!isFinite(n)) return "—";
+  return "¥" + Math.round(n).toLocaleString("en-US");
 }
 
 /** 计算K线收益数据 */
@@ -228,28 +242,42 @@ export function renderResult({
   setText(byId("cp-best-name"), primary.bestMatch || "—");
   setText(byId("cp-worst-name"), primary.worstMatch || "—");
 
-  // 金融直觉收益
-  const klineStats = calculateKlineStats(klineData || {});
-  if (klineStats) {
-    const returnEl = byId("kline-return");
-    const returnSubEl = byId("kline-return-sub");
+  // 投资账户结算：优先用真实 portfolio summary；旧历史记录（无 portfolio）退回合成 K 线统计
+  const portfolio = result?.portfolio || null;
+  const returnEl = byId("kline-return");
+  const returnSubEl = byId("kline-return-sub");
 
-    // 收益率显示
-    const returnSign = klineStats.returnRate >= 0 ? "+" : "";
+  if (portfolio) {
+    const { finalValue, returnPct, peakValue, tradeCount, holdCount, initialCash } = portfolio;
     if (returnEl) {
-      returnEl.textContent = `${returnSign}${klineStats.returnRate.toFixed(2)}%`;
-      returnEl.className = `kline-value ${klineStats.returnRate >= 0 ? "positive" : "negative"}`;
+      returnEl.textContent = fmtMoney(finalValue);
+      returnEl.className = `kline-value ${returnPct >= 0 ? "positive" : "negative"}`;
     }
     if (returnSubEl) {
-      returnSubEl.textContent = klineStats.returnRate >= 0 ? "盈利" : "亏损";
+      const sign = returnPct >= 0 ? "+" : "";
+      returnSubEl.textContent = `${sign}${returnPct.toFixed(2)}%`;
     }
-
-    // 辅助指标
-    setText(byId("kline-drawdown"), `-${klineStats.maxDrawdown.toFixed(1)}%`);
-    setText(byId("kline-sharpe"), klineStats.sharpe.toFixed(2));
-
-    // 评论
-    setText(byId("kline-comment"), getKlineComment(klineStats.returnRate, klineStats.maxDrawdown, klineStats.sharpe));
+    setText(byId("kline-drawdown"), fmtMoney(peakValue));
+    const ops = tradeCount + (holdCount ? ` · ${holdCount}持仓` : "");
+    setText(byId("kline-sharpe"), `${tradeCount} 次${holdCount ? ` +${holdCount}` : ""}`);
+    setText(byId("kline-comment"), getPortfolioComment(returnPct, tradeCount, holdCount));
+  } else {
+    // 兼容：旧历史记录无 portfolio 字段 → 退回合成统计，但 UI 语义仍用 "账户净值" 框架
+    const klineStats = calculateKlineStats(klineData || {});
+    if (klineStats) {
+      const pct = klineStats.returnRate;
+      const synthFinal = 30000 * (1 + pct / 100);
+      if (returnEl) {
+        returnEl.textContent = fmtMoney(synthFinal);
+        returnEl.className = `kline-value ${pct >= 0 ? "positive" : "negative"}`;
+      }
+      if (returnSubEl) {
+        returnSubEl.textContent = (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%";
+      }
+      setText(byId("kline-drawdown"), fmtMoney(synthFinal * (1 + klineStats.maxDrawdown / 100)));
+      setText(byId("kline-sharpe"), "—");
+      setText(byId("kline-comment"), getPortfolioComment(pct, 0, 0));
+    }
   }
 
   // ============ Story 6 · TOP 5 + 分享 ============
