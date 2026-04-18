@@ -75,7 +75,7 @@
           尽调完成度 <strong id="progress-text">0 / 21</strong>
         </div>
 
-        <!-- 仓位面板：一日一次决策，4 档（0 / 1/3 / 2/3 / 全仓） -->
+        <!-- 仓位面板：一日一次决策，滑杆连续 0%-100%（步长 10%） -->
         <div class="trade-panel" id="trade-panel" hidden>
           <div class="trade-top">
             <div class="trade-col">
@@ -87,13 +87,21 @@
               <span class="trade-pnl" id="port-pnl">+0.00%</span>
             </div>
           </div>
-          <div class="pos-slider" id="pos-slider" role="radiogroup" aria-label="今日仓位">
-            <button type="button" class="pos-seg" data-slot="0" role="radio">空仓</button>
-            <button type="button" class="pos-seg" data-slot="1" role="radio">1/3</button>
-            <button type="button" class="pos-seg" data-slot="2" role="radio">2/3</button>
-            <button type="button" class="pos-seg" data-slot="3" role="radio">全仓</button>
+          <div class="pos-slider-wrap">
+            <div class="pos-display">
+              <span class="pos-value" id="pos-value">0%</span>
+              <span class="pos-tag" id="pos-tag">空仓</span>
+            </div>
+            <input type="range" class="pos-slider-input" id="pos-slider-input"
+                   min="0" max="10" step="1" value="0" aria-label="今日仓位"
+                   style="--pos-pct:0%"/>
+            <div class="pos-ticks" aria-hidden="true">
+              <span>空仓</span>
+              <span>半仓</span>
+              <span>全仓</span>
+            </div>
           </div>
-          <div class="pos-hint" id="pos-hint">选好仓位再答题</div>
+          <div class="pos-hint" id="pos-hint">拖动滑杆决定今日仓位</div>
         </div>
 
         <div class="question-area">

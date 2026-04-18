@@ -21,7 +21,7 @@ import {
   renderHistoryList,
 } from "./history.js";
 import { showBackPopup } from "./modal.js";
-import { createPortfolio, rebuildPortfolio, SLOT_COUNT, INITIAL_PRICE } from "./portfolio.js";
+import { createPortfolio, rebuildPortfolio, POSITION_STEP, INITIAL_PRICE } from "./portfolio.js";
 import "./style.css";
 
 // 静态导入数据，Vite 打包 tree-shake
@@ -482,9 +482,9 @@ async function init() {
   let lastResult = null;
   let lastIdentity = "junior";
   let priceState = null; // K 线价格状态
-  let portfolio = null;              // 从 slotHistory 重建的账户（只读快照）
-  let slotHistory = [];              // 每题已锁定档位 (mainIdx 0..N-1)
-  let pendingSlot = 0;               // 当前待提交档位（UI 预览，未成交）
+  let portfolio = null;              // 从 positionHistory 重建的账户（只读快照）
+  let positionHistory = [];          // 每题已锁定仓位 [0,1]（mainIdx 0..N-1）
+  let pendingPosition = 0;           // 当前待提交仓位（UI 预览，未成交）
   let hasShownBackPopup = false;
   let backBtn = byId("btn-back");
 
@@ -505,7 +505,6 @@ async function init() {
     return Math.max(0, progress.current - anchorLen);
   }
 
-  // 当前待开盘价 = 上一根 candle.close（或 basePrice 表示第一日）
   function openPriceForMainIdx(mainIdx) {
     if (mainIdx <= 0) return priceState?.basePrice ?? INITIAL_PRICE;
     const closes = candleClosesFromState();
@@ -515,11 +514,20 @@ async function init() {
   function rebuildPortfolioFromHistory() {
     const closes = candleClosesFromState();
     portfolio = rebuildPortfolio(
-      slotHistory,
+      positionHistory,
       closes,
       priceState?.basePrice ?? INITIAL_PRICE,
     );
     return portfolio;
+  }
+
+  function positionTag(p) {
+    if (p <= 0.001) return "空仓";
+    if (p >= 0.999) return "全仓";
+    if (Math.abs(p - 0.5) < 0.001) return "半仓";
+    if (p < 0.3) return "轻仓";
+    if (p < 0.7) return "中仓";
+    return "重仓";
   }
 
   // 渲染交易面板（仅 main 阶段）
@@ -529,17 +537,15 @@ async function init() {
     const progress = progressOverride || (quiz ? quiz.progress() : null);
     const mainIdx = getMainIdxFromProgress(progress);
 
-    // 身份题阶段：整面板隐藏
     panel.hidden = mainIdx < 0;
     if (mainIdx < 0) return;
 
-    const locked = slotHistory[mainIdx] !== undefined;
+    const locked = positionHistory[mainIdx] !== undefined;
     panel.dataset.locked = locked ? "1" : "0";
 
     const openPrice = openPriceForMainIdx(mainIdx);
     setText(byId("port-price"), openPrice.toFixed(2));
 
-    // P&L：portfolio 已按 slotHistory 全部回放完毕（最新 lastPrice 就是最近 close 或 basePrice）
     const pct = portfolio ? portfolio.returnPct() : 0;
     const pnlEl = byId("port-pnl");
     if (pnlEl) {
@@ -548,30 +554,36 @@ async function init() {
       pnlEl.classList.toggle("down", pct < 0);
     }
 
-    // 档位高亮：锁定显示锁定档位；未锁显示 pendingSlot（默认=上一档）
-    const displayedSlot = locked
-      ? slotHistory[mainIdx]
-      : (pendingSlot ?? slotHistory[mainIdx - 1] ?? 0);
-    panel.querySelectorAll(".pos-seg").forEach((seg) => {
-      const s = Number(seg.dataset.slot);
-      seg.classList.toggle("active", s === displayedSlot);
-      seg.disabled = locked;
-    });
+    // 滑杆位置：锁定 = 历史；未锁 = pending（默认沿用上一日）
+    const displayedPos = locked
+      ? positionHistory[mainIdx]
+      : (pendingPosition ?? positionHistory[mainIdx - 1] ?? 0);
+    const slider = byId("pos-slider-input");
+    if (slider) {
+      slider.disabled = locked;
+      // range step=0.1，内部乘 10 映射到整数（避免 step 对齐问题）
+      const sliderVal = Math.round(displayedPos * 10);
+      if (Number(slider.value) !== sliderVal) slider.value = String(sliderVal);
+      // 填充色（CSS var 控制 ::-webkit-slider-runnable-track 渐变）
+      const pctDisplay = Math.round(displayedPos * 100);
+      slider.style.setProperty("--pos-pct", pctDisplay + "%");
+    }
+    setText(byId("pos-value"), `${Math.round(displayedPos * 100)}%`);
+    setText(byId("pos-tag"), positionTag(displayedPos));
 
-    // 提示语
     const hintEl = byId("pos-hint");
     if (hintEl) {
       hintEl.textContent = locked
-        ? "本日档位已锁定（回退也不改变结果）"
+        ? "本日仓位已锁定（回退不改变结果）"
         : mainIdx === 0
-          ? `开盘价 ¥${openPrice.toFixed(2)} · 选好仓位再答题`
+          ? `开盘价 ¥${openPrice.toFixed(2)} · 拖动滑杆决定仓位`
           : "今日开盘 · 一日一次决策";
     }
   }
 
-  function setPendingSlotFromUI(slot) {
-    const safe = Math.max(0, Math.min(SLOT_COUNT, Math.round(slot)));
-    pendingSlot = safe;
+  function setPendingPositionFromUI(pos) {
+    const safe = Math.max(0, Math.min(1, Math.round(pos / POSITION_STEP) * POSITION_STEP));
+    pendingPosition = safe;
     updatePortfolioDisplay();
   }
 
@@ -579,28 +591,28 @@ async function init() {
     const panel = byId("trade-panel");
     if (!panel || panel.dataset.wired === "1") return;
     panel.dataset.wired = "1";
-    panel.addEventListener("click", (e) => {
-      const seg = e.target.closest(".pos-seg");
-      if (!seg || seg.disabled) return;
-      const slot = Number(seg.dataset.slot);
-      if (Number.isFinite(slot)) setPendingSlotFromUI(slot);
-    });
+    const slider = byId("pos-slider-input");
+    if (slider) {
+      slider.addEventListener("input", (e) => {
+        if (slider.disabled) return;
+        const v = Number(e.target.value) / 10; // 整数 0-10 → 0-1
+        setPendingPositionFromUI(v);
+      });
+    }
   }
 
-  // 在 quiz.answer() 之前调用：锁定 slotHistory[mainIdx]，若未提交则默认沿用上一档（hold）
-  function commitSlotBeforeAnswer() {
+  // 在 quiz.answer() 之前调用：锁定 positionHistory[mainIdx]，若未提交则默认沿用上一日
+  function commitPositionBeforeAnswer() {
     if (!quiz) return;
     const progress = quiz.progress();
     const mainIdx = getMainIdxFromProgress(progress);
-    if (mainIdx < 0) return; // anchor 不交易
-    if (slotHistory[mainIdx] !== undefined) return; // 已锁定（back-nav）
-    const fallback = slotHistory[mainIdx - 1] ?? 0;
-    const target = pendingSlot !== undefined ? pendingSlot : fallback;
-    slotHistory[mainIdx] = target;
-    // 重建 portfolio，使其反映本次新锁定的档位
+    if (mainIdx < 0) return;
+    if (positionHistory[mainIdx] !== undefined) return;
+    const fallback = positionHistory[mainIdx - 1] ?? 0;
+    const target = pendingPosition !== undefined ? pendingPosition : fallback;
+    positionHistory[mainIdx] = target;
     rebuildPortfolioFromHistory();
-    // 下一题默认沿用这一档（pendingSlot 已是该值）
-    pendingSlot = target;
+    pendingPosition = target;
   }
 
   function doBack() {
@@ -636,8 +648,8 @@ async function init() {
   }
 
   function handleAnswer(value, originalIdx) {
-    // 先锁定本题档位（首次提交）；回退后重答不触发（已锁定）
-    commitSlotBeforeAnswer();
+    // 先锁定本题仓位（首次提交）；回退后重答不触发（已锁定）
+    commitPositionBeforeAnswer();
 
     const next = quiz.answer(value, originalIdx);
     if (next) {
@@ -708,15 +720,15 @@ async function init() {
     const baseSummary = portfolio ? portfolio.summary() : null;
     let tradeCount = 0;
     let holdCount = 0;
-    let prevSlot = 0;
-    for (const s of slotHistory) {
-      if (s === undefined) continue;
-      if (s !== prevSlot) tradeCount++;
+    let prev = 0;
+    for (const p of positionHistory) {
+      if (p === undefined) continue;
+      if (Math.abs(p - prev) > 1e-9) tradeCount++;
       else holdCount++;
-      prevSlot = s;
+      prev = p;
     }
     const portfolioSummary = baseSummary
-      ? { ...baseSummary, tradeCount, holdCount, slotHistory: [...slotHistory] }
+      ? { ...baseSummary, tradeCount, holdCount, positionHistory: [...positionHistory] }
       : null;
 
     saveToLocalHistory({
@@ -826,10 +838,10 @@ async function init() {
   const btnStart = byId("btn-start");
   if (btnStart) {
     btnStart.addEventListener("click", () => {
-      priceState = null;            // 重置 K 线价格
-      slotHistory = [];              // 重置仓位历史
-      pendingSlot = 0;               // 重置待提交档位
-      portfolio = createPortfolio(30000); // 先给一个空账户，renderQuestion 会重建
+      priceState = null;              // 重置 K 线价格
+      positionHistory = [];            // 重置仓位历史
+      pendingPosition = 0;             // 重置待提交仓位
+      portfolio = createPortfolio(30000);
       wireTradingPanel();
       hasShownBackPopup = false;
       const first = quiz.start();
@@ -843,10 +855,10 @@ async function init() {
   const btnRestart = byId("btn-restart");
   if (btnRestart) {
     btnRestart.addEventListener("click", () => {
-      priceState = null;            // 重置 K 线价格
-      slotHistory = [];              // 重置仓位历史
-      pendingSlot = 0;               // 重置待提交档位
-      portfolio = createPortfolio(30000); // 先给一个空账户，renderQuestion 会重建
+      priceState = null;              // 重置 K 线价格
+      positionHistory = [];            // 重置仓位历史
+      pendingPosition = 0;             // 重置待提交仓位
+      portfolio = createPortfolio(30000);
       wireTradingPanel();
       hasShownBackPopup = false;
       const first = quiz.start();

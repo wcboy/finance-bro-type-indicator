@@ -740,7 +740,8 @@ body:not(.app-ready) #app {
   border: 1px solid rgba(26, 20, 10, 0.12);
   border-radius: var(--radius-md);
 }
-.trade-panel[data-locked="1"] .pos-slider { opacity: 0.55; }
+.trade-panel[data-locked="1"] .pos-slider-wrap { opacity: 0.78; }
+.trade-panel[data-locked="1"] .pos-value { color: rgba(26, 20, 10, 0.55); }
 .trade-top {
   display: flex;
   justify-content: space-between;
@@ -774,49 +775,121 @@ body:not(.app-ready) #app {
 .trade-pnl.up { color: #c93a3a; }    /* A 股红涨 */
 .trade-pnl.down { color: #0c8f87; }  /* 绿跌 */
 
-/* 4 段仓位滑杆 */
-.pos-slider {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 3px;
-  background: rgba(26, 20, 10, 0.08);
-  border-radius: 8px;
-  padding: 3px;
+/* 连续仓位滑杆（0%-100%，步长 10%） */
+.pos-slider-wrap {
+  padding: 0.3rem 0.1rem 0;
 }
-.pos-seg {
-  appearance: none;
-  border: none;
-  padding: 0.5rem 0.2rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  background: transparent;
-  color: var(--text-dim);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s, transform 0.1s;
-  letter-spacing: 0.02em;
+.pos-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-bottom: 0.4rem;
 }
-.pos-seg:hover:not(:disabled):not(.active) {
-  background: rgba(26, 20, 10, 0.06);
+.pos-value {
+  font-family: var(--font-display, var(--font-mono));
+  font-size: 1.55rem;
+  font-weight: 800;
   color: var(--ink-black);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
-.pos-seg.active {
-  background: var(--rouge-ink, #1a140a);
-  color: #fffaec;
-  box-shadow: 0 1px 2px rgba(26, 20, 10, 0.18);
+.pos-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--rouge-ink);
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 1px solid rgba(26, 20, 10, 0.25);
+  border-radius: 10px;
+  background: rgba(255, 250, 236, 0.5);
 }
-.pos-seg:disabled {
+
+/* range input 跨浏览器样式化 */
+.pos-slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 32px;
+  background: transparent;
+  cursor: pointer;
+  --pos-pct: 0%;
+  --track-color: rgba(26, 20, 10, 0.15);
+  --fill-color: var(--rouge-ink, #1a140a);
+  --thumb-color: var(--rouge, #c93a3a);
+}
+.pos-slider-input:disabled {
   cursor: not-allowed;
+  opacity: 0.55;
+  --fill-color: rgba(26, 20, 10, 0.5);
+  --thumb-color: rgba(26, 20, 10, 0.45);
 }
-.pos-seg:active:not(:disabled) { transform: translateY(1px); }
+
+/* 轨道 */
+.pos-slider-input::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right,
+    var(--fill-color) 0%, var(--fill-color) var(--pos-pct),
+    var(--track-color) var(--pos-pct), var(--track-color) 100%);
+}
+.pos-slider-input::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--track-color);
+}
+.pos-slider-input::-moz-range-progress {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--fill-color);
+}
+
+/* 拇指（handle） */
+.pos-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--thumb-color);
+  border: 2.5px solid #fffaec;
+  box-shadow: 0 2px 5px rgba(26, 20, 10, 0.25);
+  margin-top: -7px;
+  cursor: inherit;
+  transition: transform 0.1s;
+}
+.pos-slider-input:active:not(:disabled)::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.pos-slider-input::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--thumb-color);
+  border: 2.5px solid #fffaec;
+  box-shadow: 0 2px 5px rgba(26, 20, 10, 0.25);
+  cursor: inherit;
+}
+
+.pos-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  padding: 0.3rem 4px 0;
+}
 
 .pos-hint {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--text-dim);
   text-align: center;
-  margin-top: 0.55rem;
+  margin-top: 0.45rem;
   letter-spacing: 0.03em;
 }
 
@@ -824,7 +897,8 @@ body:not(.app-ready) #app {
 @media (max-width: 480px) {
   .trade-v { font-size: 0.96rem; }
   .trade-pnl { font-size: 1.05rem; }
-  .pos-seg { font-size: 0.76rem; padding: 0.55rem 0.15rem; }
+  .pos-value { font-size: 1.4rem; }
+  .pos-tag { font-size: 0.7rem; }
 }
 
 /* 问题区 */
