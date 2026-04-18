@@ -15,6 +15,12 @@ import { renderResult } from "./result.js";
 import { renderRadar } from "./chart.js";
 import { uploadResult } from "./firebaseConfig.js";
 import { validateAll } from "./validate.js";
+import {
+  getLocalHistory,
+  saveToLocalHistory,
+  renderHistoryList,
+} from "./history.js";
+import { showBackPopup } from "./modal.js";
 import "./style.css";
 
 // 静态导入数据，Vite 打包 tree-shake
@@ -25,84 +31,6 @@ import config from "../data/config.json";
 import cognitive from "../data/interpretations/cognitive.json";
 import behavioral from "../data/interpretations/behavioral.json";
 import social from "../data/interpretations/social.json";
-
-// ============ 本地存储管理（用户端历史记录）============
-const STORAGE_KEY = "fbti_history";
-
-/**
- * 获取本地历史记录
- */
-function getLocalHistory() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-}
-
-/**
- * 保存测试记录到本地（用户自己查看）
- * @param {Object} record - 测试记录
- */
-function saveToLocalHistory(record) {
-  try {
-    const history = getLocalHistory();
-    history.unshift({
-      ...record,
-      timestamp: Date.now(),
-    });
-    // 最多保留20条记录
-    if (history.length > 20) history.pop();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch (e) {
-    console.warn("无法保存历史记录:", e);
-  }
-}
-
-/**
- * 渲染历史记录列表
- * @param {Function} onHistoryClick - 点击历史记录的回调
- */
-function renderHistoryList(onHistoryClick) {
-  const container = byId("history-list");
-  if (!container) return;
-
-  const history = getLocalHistory();
-  container.textContent = "";
-
-  if (history.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "history-empty";
-    empty.textContent = "暂无历史记录";
-    container.appendChild(empty);
-    return;
-  }
-
-  history.forEach((record, idx) => {
-    const item = document.createElement("div");
-    item.className = "history-item";
-    const date = new Date(record.timestamp);
-    const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
-    const codeSpan = document.createElement("span");
-    codeSpan.className = "history-code";
-    codeSpan.textContent = record.code || "—";
-    const nameSpan = document.createElement("span");
-    nameSpan.className = "history-name";
-    nameSpan.textContent = record.cn || "";
-    const timeSpan = document.createElement("span");
-    timeSpan.className = "history-time";
-    timeSpan.textContent = dateStr;
-    item.append(codeSpan, nameSpan, timeSpan);
-    // 点击历史记录显示分享卡片
-    item.addEventListener("click", () => {
-      if (onHistoryClick) {
-        onHistoryClick(record);
-      }
-    });
-    container.appendChild(item);
-  });
-}
 
 function byId(id) {
   return document.getElementById(id);
@@ -559,27 +487,11 @@ async function init() {
   let hasShownBackPopup = false; // 是否已显示过回退提示弹窗
   let backBtn = byId("btn-back"); // 返回上一题按钮
 
-  // 显示回退提示弹窗
-  function showBackPopup(onConfirm) {
-    const modal = document.createElement("div");
-    modal.className = "back-modal";
-    modal.innerHTML = `
-      <div class="back-modal-content">
-        <div class="back-modal-title">提示</div>
-        <div class="back-modal-text">
-          你可以更改作答，但你的<strong>K线不可以回到昨天</strong>。
-        </div>
-        <button class="btn btn-primary" id="back-popup-confirm">我知道了</button>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    const confirmBtn = modal.querySelector("#back-popup-confirm");
-    if (confirmBtn) {
-      confirmBtn.addEventListener("click", () => {
-        modal.remove();
-        hasShownBackPopup = true;
-        onConfirm();
-      });
+  function doBack() {
+    const prev = quiz.goBack();
+    if (prev) {
+      renderQuestion(prev, quiz.progress());
+      updateBackButtonVisibility();
     }
   }
 
@@ -592,19 +504,12 @@ async function init() {
 
     // 第一次使用回退功能时显示弹窗
     if (!hasShownBackPopup) {
-      showBackPopup(() => {
-        const prev = quiz.goBack();
-        if (prev) {
-          renderQuestion(prev, quiz.progress());
-          updateBackButtonVisibility();
-        }
+      showBackPopup().then(() => {
+        hasShownBackPopup = true;
+        doBack();
       });
     } else {
-      const prev = quiz.goBack();
-      if (prev) {
-        renderQuestion(prev, quiz.progress());
-        updateBackButtonVisibility();
-      }
+      doBack();
     }
   }
 
