@@ -21,9 +21,9 @@
       "text": "酒会上，一个穿Loro Piana的「大佬」听说你是做量化的，立刻用一种看实习生的语气说：「量化啊，那不是写代码的吗？」旁边几个做PE的已经开始憋笑了。",
       "options": [
         { "label": "尴尬笑笑，「对对，就是写代码的」", "value": 1, "dimScores": { "SOCIAL": 1, "CYNICISM": 1 } },
-        { "label": "「量化其实分很多方向，我主要做因子挖掘」", "value": 2, "dimScores": { "SOCIAL": 2, "CYNICISM": 2 } },
-        { "label": "「量化确实要写代码，不过文艺复兴年化66%，您知道是怎么做到的吗？」", "value": 3, "dimScores": { "SOCIAL": 2, "CYNICISM": 3 } },
-        { "label": "「哈哈，是啊，我现在就是个码农。对了，您最近看什么赛道？」", "value": 4, "dimScores": { "SOCIAL": 3, "CYNICISM": 1 } }
+        { "label": "「量化其实分很多方向，我主要做因子挖掘」", "value": 2, "dimScores": { "SOCIAL": 2, "CYNICISM": 1 } },
+        { "label": "「量化确实要写代码，不过文艺复兴年化66%，您知道是怎么做到的吗？」", "value": 3, "dimScores": { "SOCIAL": 2, "CYNICISM": 3, "CONFLICT": 2 } },
+        { "label": "「哈哈，是啊，我现在就是个码农。对了，您最近看什么赛道？」", "value": 4, "dimScores": { "SOCIAL": 3, "CYNICISM": 2 } }
       ]
     },
     {
@@ -35,9 +35,9 @@
       "text": "周五晚上11点，老板发来微信：「这版PPT差点意思，周一晨会要用，辛苦一下。」你刚关上电脑准备回家过周末。",
       "options": [
         { "label": "「好的收到」，默默打开电脑重做", "value": 1, "dimScores": { "BOUNDARY": 1, "SURVIVAL": 1 } },
-        { "label": "「收到，我周日晚给您」，实际周日晚上才开始做", "value": 2, "dimScores": { "BOUNDARY": 2, "SURVIVAL": 2 } },
-        { "label": "「这周做过三版了，周一早上对齐一下具体要改什么？」", "value": 3, "dimScores": { "BOUNDARY": 3, "SURVIVAL": 2 } },
-        { "label": "「收到」。周一早上说「不好意思周末没看消息，现在开始做」", "value": 4, "dimScores": { "BOUNDARY": 2, "SURVIVAL": 3 } }
+        { "label": "「收到，我周日晚给您」，实际周日晚上才开始做", "value": 2, "dimScores": { "BOUNDARY": 2, "SURVIVAL": 3 } },
+        { "label": "「这周做过三版了，周一早上对齐一下具体要改什么？」", "value": 3, "dimScores": { "BOUNDARY": 3, "SURVIVAL": 2, "CONFLICT": 2 } },
+        { "label": "「收到」。周一早上说「不好意思周末没看消息，现在开始做」", "value": 4, "dimScores": { "BOUNDARY": 3, "SURVIVAL": 3 } }
       ]
     },
     {
@@ -49,8 +49,8 @@
       "text": "面试时，HR说：「我们这里对标的是高盛、中金，所以起薪12k，但平台价值是无价的。而且我们是扁平化管理，你进去就是核心团队。」你本科985，硕士QS前50。",
       "options": [
         { "label": "「谢谢机会，我愿意从基层做起」", "value": 1, "dimScores": { "CYNICISM": 1, "STRATEGY": 1 } },
-        { "label": "心里骂娘，面上点头，「我考虑一下，多久回复您？」", "value": 2, "dimScores": { "CYNICISM": 3, "STRATEGY": 2 } },
-        { "label": "「对标高盛的话，他们起薪大概是多少来着？」", "value": 3, "dimScores": { "CYNICISM": 3, "STRATEGY": 3 } },
+        { "label": "心里骂娘，面上点头，「我考虑一下，多久回复您？」", "value": 2, "dimScores": { "CYNICISM": 3, "STRATEGY": 3 } },
+        { "label": "「对标高盛的话，他们起薪大概是多少来着？」", "value": 3, "dimScores": { "CYNICISM": 3, "STRATEGY": 3, "CONFLICT": 2 } },
         { "label": "「能介绍一下核心团队背景和具体业务模式吗？」", "value": 4, "dimScores": { "CYNICISM": 2, "STRATEGY": 3 } }
       ]
     },
@@ -64,8 +64,8 @@
       "options": [
         { "label": "「明白，我来想办法」，开始研究怎么绕过流程", "value": 1, "dimScores": { "RISK": 3, "SURVIVAL": 1 } },
         { "label": "装傻，「领导您看有什么正规方式可以加速？」", "value": 2, "dimScores": { "RISK": 2, "SURVIVAL": 2 } },
-        { "label": "「这个我确实不太懂，要不我咨询一下合规部？」", "value": 3, "dimScores": { "RISK": 1, "SURVIVAL": 2 } },
-        { "label": "「收到。您能发个微信确认一下具体要求吗？」", "value": 4, "dimScores": { "RISK": 2, "SURVIVAL": 3 } }
+        { "label": "「这个我确实不太懂，要不我咨询一下合规部？」", "value": 3, "dimScores": { "RISK": 1, "SURVIVAL": 1, "BOUNDARY": 3 } },
+        { "label": "「收到。您能发个微信确认一下具体要求吗？」", "value": 4, "dimScores": { "RISK": 1, "SURVIVAL": 3, "BOUNDARY": 3 } }
       ]
     },
     {
@@ -77,9 +77,9 @@
       "text": "开会上，某副总当着二十多人的面说：「女同志就是细心，所以Excel这块还是找女同志做比较好，逻辑分析这块男同志来。」你是女的，数据分析能力全组最强。",
       "options": [
         { "label": "低头看手机，假装没听见", "value": 1, "dimScores": { "CONFLICT": 1, "SURVIVAL": 1 } },
-        { "label": "会后找他私下沟通，表达不舒服", "value": 2, "dimScores": { "CONFLICT": 2, "SURVIVAL": 2 } },
-        { "label": "「副总，我上次的模型预测准确率92%，要不给您过一下？」", "value": 3, "dimScores": { "CONFLICT": 3, "SURVIVAL": 2 } },
-        { "label": "笑一笑，「副总您真幽默」。然后在群里发一份自己主导的项目成果", "value": 4, "dimScores": { "CONFLICT": 2, "SURVIVAL": 3 } }
+        { "label": "会后找他私下沟通，表达不舒服", "value": 2, "dimScores": { "CONFLICT": 2, "SURVIVAL": 3 } },
+        { "label": "「副总，我上次的模型预测准确率92%，要不给您过一下？」", "value": 3, "dimScores": { "CONFLICT": 3, "SURVIVAL": 1 } },
+        { "label": "笑一笑，「副总您真幽默」。然后在群里发一份自己主导的项目成果", "value": 4, "dimScores": { "CONFLICT": 2, "SURVIVAL": 3, "STRATEGY": 2 } }
       ]
     },
     {
@@ -91,9 +91,9 @@
       "text": "入职三个月，你的mentor从不带你做业务，只让你「多看看过往材料」「整理一下会议纪要」「帮我订一下下午茶」。你问什么时候能上手项目，他说「你还没ready」。",
       "options": [
         { "label": "继续等，「可能确实还不够格」", "value": 1, "dimScores": { "PATIENCE": 3, "LEARN": 1 } },
-        { "label": "自己找事做，偷偷观察别人怎么做，整理自学笔记", "value": 2, "dimScores": { "PATIENCE": 2, "LEARN": 3 } },
-        { "label": "「三个月了，要不您给个具体checklist，达标我就上手？」", "value": 3, "dimScores": { "PATIENCE": 1, "LEARN": 2 } },
-        { "label": "私下找HR聊聊，了解一下新人培养的标准流程", "value": 4, "dimScores": { "PATIENCE": 1, "LEARN": 1, "CONFLICT": 2 } }
+        { "label": "自己找事做，偷偷观察别人怎么做，整理自学笔记", "value": 2, "dimScores": { "PATIENCE": 3, "LEARN": 3 } },
+        { "label": "「三个月了，要不您给个具体checklist，达标我就上手？」", "value": 3, "dimScores": { "PATIENCE": 1, "LEARN": 3, "CONFLICT": 2 } },
+        { "label": "私下找HR聊聊，了解一下新人培养的标准流程", "value": 4, "dimScores": { "PATIENCE": 1, "LEARN": 2, "NETWORK": 2 } }
       ]
     },
     {
@@ -104,10 +104,10 @@
       "smartNote": "",
       "text": "客户暗示：「我知道你们按规定不能私下推荐股票，但咱俩这关系...」然后发来一个股票代码，「就当帮老哥参考参考。」",
       "options": [
-        { "label": "「我私下给您看看，不过这只是个人观点啊」", "value": 1, "dimScores": { "DECISION": 1, "RISK": 3 } },
-        { "label": "「张总您眼光肯定没问题，我帮您留意着」，然后什么都不做", "value": 2, "dimScores": { "DECISION": 2, "RISK": 2 } },
-        { "label": "「这个我帮不了，公司规定很严，您别让我为难」", "value": 3, "dimScores": { "DECISION": 3, "RISK": 1 } },
-        { "label": "「张总，合规红线碰不得。不过我可以帮您约投研部门做个正式交流」", "value": 4, "dimScores": { "DECISION": 2, "RISK": 1, "SOCIAL": 2 } }
+        { "label": "「我私下给您看看，不过这只是个人观点啊」", "value": 1, "dimScores": { "DECISION": 1, "RISK": 3, "SURVIVAL": 1 } },
+        { "label": "「张总您眼光肯定没问题，我帮您留意着」，然后什么都不做", "value": 2, "dimScores": { "DECISION": 2, "RISK": 2, "SURVIVAL": 3 } },
+        { "label": "「这个我帮不了，公司规定很严，您别让我为难」", "value": 3, "dimScores": { "DECISION": 3, "RISK": 1, "BOUNDARY": 3, "CONFLICT": 2 } },
+        { "label": "「张总，合规红线碰不得。不过我可以帮您约投研部门做个正式交流」", "value": 4, "dimScores": { "DECISION": 2, "RISK": 1, "SOCIAL": 2, "BOUNDARY": 3 } }
       ]
     },
     {
@@ -119,9 +119,9 @@
       "text": "公司推行「全员赋能」，每周要写OKR、填周报、开复盘会、做360度评估、参加读书分享会。你实际工作量没减，还要多花8小时在这些「赋能」上。",
       "options": [
         { "label": "认真对待，每样都好好做，相信日积月累", "value": 1, "dimScores": { "EXECUTE": 3, "CYNICISM": 1 } },
-        { "label": "能糊弄就糊弄，复制粘贴，反正没人细看", "value": 2, "dimScores": { "EXECUTE": 1, "CYNICISM": 3 } },
-        { "label": "找leader对齐：「哪些必须认真做？哪些可以简化？」", "value": 3, "dimScores": { "EXECUTE": 2, "CYNICISM": 2 } },
-        { "label": "在复盘会上提了一嘴：这些流程的实际产出好像不太明显", "value": 4, "dimScores": { "EXECUTE": 1, "CYNICISM": 3, "CONFLICT": 2 } }
+        { "label": "能糊弄就糊弄，复制粘贴，反正没人细看", "value": 2, "dimScores": { "EXECUTE": 1, "CYNICISM": 3, "SURVIVAL": 3 } },
+        { "label": "找leader对齐：「哪些必须认真做？哪些可以简化？」", "value": 3, "dimScores": { "EXECUTE": 2, "CYNICISM": 2, "STRATEGY": 2 } },
+        { "label": "在复盘会上提了一嘴：这些流程的实际产出好像不太明显", "value": 4, "dimScores": { "EXECUTE": 1, "CYNICISM": 3, "CONFLICT": 2, "BOUNDARY": 3, "SURVIVAL": 1 } }
       ]
     },
     {
@@ -132,10 +132,10 @@
       "smartNote": "",
       "text": "同事A跟你关系很好，经常一起吃饭吐槽。后来你发现，她只跟「有用的人」吃饭——一个实习生转正后，她立刻从爱答不理变成天天约饭。你刚被分配到一个核心项目。",
       "options": [
-        { "label": "可能我想多了，继续正常相处", "value": 1, "dimScores": { "NETWORK": 2, "CYNICISM": 1 } },
-        { "label": "渐渐疏远，减少单独吃饭的频率", "value": 2, "dimScores": { "NETWORK": 1, "CYNICISM": 2 } },
-        { "label": "保持工作关系，但设好边界，不再分享私人信息", "value": 3, "dimScores": { "NETWORK": 2, "CYNICISM": 3 } },
-        { "label": "她既然讲利益，我也讲利益。信息换信息，看谁划算", "value": 4, "dimScores": { "NETWORK": 3, "CYNICISM": 2 } }
+        { "label": "可能我想多了，继续正常相处", "value": 1, "dimScores": { "NETWORK": 1, "CYNICISM": 1 } },
+        { "label": "渐渐疏远，减少单独吃饭的频率", "value": 2, "dimScores": { "NETWORK": 1, "CYNICISM": 2, "BOUNDARY": 2 } },
+        { "label": "保持工作关系，但设好边界，不再分享私人信息", "value": 3, "dimScores": { "NETWORK": 2, "CYNICISM": 3, "BOUNDARY": 3 } },
+        { "label": "她既然讲利益，我也讲利益。信息换信息，看谁划算", "value": 4, "dimScores": { "NETWORK": 3, "CYNICISM": 3, "STRATEGY": 2 } }
       ]
     },
     {
@@ -146,10 +146,10 @@
       "smartNote": "",
       "text": "前领导承诺过「这个项目做完给你调岗」，你加班三个月做完后，他说「再做一个吧，这个更有说服力」。这次新领导又画了类似的饼。",
       "options": [
-        { "label": "这次应该是真的，好好干吧", "value": 1, "dimScores": { "STRATEGY": 1, "SURVIVAL": 2 } },
+        { "label": "这次应该是真的，好好干吧", "value": 1, "dimScores": { "STRATEGY": 1, "SURVIVAL": 1 } },
         { "label": "边干边观望，同时偷偷投简历", "value": 2, "dimScores": { "STRATEGY": 2, "SURVIVAL": 3 } },
-        { "label": "「领导，能否先把调岗的具体时间和流程确定下来？」", "value": 3, "dimScores": { "STRATEGY": 3, "SURVIVAL": 2 } },
-        { "label": "「好的领导」。然后把之前的承诺邮件翻出来，抄送给HR存档，同时开始面试", "value": 4, "dimScores": { "STRATEGY": 3, "SURVIVAL": 3 } }
+        { "label": "「领导，能否先把调岗的具体时间和流程确定下来？」", "value": 3, "dimScores": { "STRATEGY": 3, "SURVIVAL": 2, "CONFLICT": 2 } },
+        { "label": "「好的领导」。然后把之前的承诺邮件翻出来，抄送给HR存档，同时开始面试", "value": 4, "dimScores": { "STRATEGY": 3, "SURVIVAL": 3, "CYNICISM": 3, "BOUNDARY": 2 } }
       ]
     },
     {
@@ -161,9 +161,9 @@
       "text": "组里有个「老人」，资历老但不干活。每次活分下来他都「指导」你：「你这样做不对」「我当年怎么怎么」。出了问题他说「我早就说了」，功劳他领。",
       "options": [
         { "label": "忍了，他是前辈", "value": 1, "dimScores": { "CONFLICT": 1, "SURVIVAL": 1 } },
-        { "label": "面上点头，但做事时按自己判断来，出问题就说是按他的建议做的", "value": 2, "dimScores": { "CONFLICT": 2, "SURVIVAL": 2 } },
+        { "label": "面上点头，但做事时按自己判断来，出问题就说是按他的建议做的", "value": 2, "dimScores": { "CONFLICT": 2, "SURVIVAL": 3, "CYNICISM": 2 } },
         { "label": "每次邮件汇报时明确标注：「根据XX老师的指导，我做了如下调整」", "value": 3, "dimScores": { "CONFLICT": 2, "SURVIVAL": 3 } },
-        { "label": "某次会议上直接说：「这块是XX老师指导的，他觉得这样更好」", "value": 4, "dimScores": { "CONFLICT": 3, "SURVIVAL": 2 } }
+        { "label": "某次会议上直接说：「这块是XX老师指导的，他觉得这样更好」", "value": 4, "dimScores": { "CONFLICT": 3, "SURVIVAL": 1 } }
       ]
     },
     {
@@ -174,10 +174,10 @@
       "smartNote": "",
       "text": "大年初二，家族聚餐。七大姑八大姨围攻：「怎么还没对象？」「你看谁谁谁孩子都俩了」「读书读傻了吧」。你妈在旁边附和点头。",
       "options": [
-        { "label": "尴尬笑笑，「快了快了」", "value": 1, "dimScores": { "BOUNDARY": 1, "PATIENCE": 3 } },
+        { "label": "尴尬笑笑，「快了快了」", "value": 1, "dimScores": { "BOUNDARY": 1, "PATIENCE": 2 } },
         { "label": "找借口离席，躲去刷手机", "value": 2, "dimScores": { "BOUNDARY": 2, "PATIENCE": 2 } },
-        { "label": "「今年行情不好，我们部门裁了40%，我保住工作就不错了」", "value": 3, "dimScores": { "BOUNDARY": 3, "PATIENCE": 1, "SOCIAL": 2 } },
-        { "label": "笑着点头，「阿姨说得对」。然后反问：「您家孩子成绩怎么样？期末考多少分？」", "value": 4, "dimScores": { "BOUNDARY": 2, "PATIENCE": 3 } }
+        { "label": "「今年行情不好，我们部门裁了40%，我保住工作就不错了」", "value": 3, "dimScores": { "BOUNDARY": 3, "PATIENCE": 1, "SOCIAL": 1, "CYNICISM": 3 } },
+        { "label": "笑着点头，「阿姨说得对」。然后反问：「您家孩子成绩怎么样？期末考多少分？」", "value": 4, "dimScores": { "BOUNDARY": 2, "PATIENCE": 1, "STRATEGY": 3, "CONFLICT": 2 } }
       ]
     },
     {
@@ -188,10 +188,10 @@
       "smartNote": "",
       "text": "你所在的业务线连续三年裁人，领导离职率80%，但公司每年都说「明年就好了」。猎头给你推了一个新兴赛道的offer，薪资持平但前景不明。",
       "options": [
-        { "label": "留守，「万一明年真好了呢」", "value": 1, "dimScores": { "STRATEGY": 1, "LEARN": 1 } },
+        { "label": "留守，「万一明年真好了呢」", "value": 1, "dimScores": { "STRATEGY": 1, "LEARN": 1, "CYNICISM": 1 } },
         { "label": "先不跳，但开始打听其他机会，更新简历", "value": 2, "dimScores": { "STRATEGY": 2, "LEARN": 2 } },
-        { "label": "深入调研新兴赛道，找行内人聊清楚再决定", "value": 3, "dimScores": { "STRATEGY": 3, "LEARN": 3 } },
-        { "label": "直接接受offer，风险与机会并存", "value": 4, "dimScores": { "STRATEGY": 1, "LEARN": 2, "RISK": 3 } }
+        { "label": "深入调研新兴赛道，找行内人聊清楚再决定", "value": 3, "dimScores": { "STRATEGY": 3, "LEARN": 3, "PATIENCE": 3 } },
+        { "label": "直接接受offer，风险与机会并存", "value": 4, "dimScores": { "STRATEGY": 1, "LEARN": 2, "RISK": 3, "DECISION": 3 } }
       ]
     },
     {
@@ -204,8 +204,8 @@
       "options": [
         { "label": "硬着头皮喝一口", "value": 1, "dimScores": { "BOUNDARY": 1, "SURVIVAL": 1 } },
         { "label": "「我以茶代酒」，然后被一直劝", "value": 2, "dimScores": { "BOUNDARY": 2, "SURVIVAL": 2 } },
-        { "label": "「医生说酒精过敏会休克，要不我给各位倒酒？」", "value": 3, "dimScores": { "BOUNDARY": 3, "SURVIVAL": 2 } },
-        { "label": "悄悄跟部门领导说明情况，请他帮忙挡一下", "value": 4, "dimScores": { "BOUNDARY": 2, "SURVIVAL": 3, "SOCIAL": 3 } }
+        { "label": "「医生说酒精过敏会休克，要不我给各位倒酒？」", "value": 3, "dimScores": { "BOUNDARY": 3, "SURVIVAL": 3, "STRATEGY": 2, "SOCIAL": 2 } },
+        { "label": "悄悄跟部门领导说明情况，请他帮忙挡一下", "value": 4, "dimScores": { "BOUNDARY": 2, "SURVIVAL": 3, "SOCIAL": 3, "NETWORK": 3 } }
       ]
     },
     {
@@ -216,10 +216,10 @@
       "smartNote": "",
       "text": "内幕消息：某公司下周要公告重大利好。你朋友说：「放心，这消息我舅舅亲耳听董事长说的，绝对稳。投入多少，翻倍多少。」",
       "options": [
-        { "label": "跟着买一点，「反正是朋友舅舅的消息」", "value": 1, "dimScores": { "RISK": 3, "CYNICISM": 1 } },
-        { "label": "不参与，但也不多说什么", "value": 2, "dimScores": { "RISK": 2, "CYNICISM": 2 } },
-        { "label": "「内幕交易是刑事犯罪，我劝你也别碰」", "value": 3, "dimScores": { "RISK": 1, "CYNICISM": 3, "CONFLICT": 3 } },
-        { "label": "找理由离开，事后发条微信：「听说最近查得严，注意点」", "value": 4, "dimScores": { "RISK": 1, "CYNICISM": 3, "SOCIAL": 3 } }
+        { "label": "跟着买一点，「反正是朋友舅舅的消息」", "value": 1, "dimScores": { "RISK": 3, "CYNICISM": 1, "BOUNDARY": 1, "SURVIVAL": 1 } },
+        { "label": "不参与，但也不多说什么", "value": 2, "dimScores": { "RISK": 1, "CYNICISM": 2 } },
+        { "label": "「内幕交易是刑事犯罪，我劝你也别碰」", "value": 3, "dimScores": { "RISK": 1, "CYNICISM": 3, "CONFLICT": 3, "BOUNDARY": 3 } },
+        { "label": "找理由离开，事后发条微信：「听说最近查得严，注意点」", "value": 4, "dimScores": { "RISK": 1, "CYNICISM": 3, "SOCIAL": 2, "NETWORK": 3, "STRATEGY": 2 } }
       ]
     },
     {
@@ -230,10 +230,10 @@
       "smartNote": "",
       "text": "你跟踪了半年的标的出现重大利空，股价已经跌了20%。你的模型显示还会再跌15%，但现在是「抄底」的好时机。账户里有你一年的奖金。",
       "options": [
-        { "label": "继续观望，等利空完全消化后再看", "value": 1, "dimScores": { "DECISION": 1, "STRATEGY": 2 } },
-        { "label": "立刻止损卖出，模型预测还会跌15%，不能赌", "value": 2, "dimScores": { "DECISION": 3, "STRATEGY": 2 } },
+        { "label": "继续观望，等利空完全消化后再看", "value": 1, "dimScores": { "DECISION": 1, "STRATEGY": 1 } },
+        { "label": "立刻止损卖出，模型预测还会跌15%，不能赌", "value": 2, "dimScores": { "DECISION": 3, "STRATEGY": 2, "RISK": 1 } },
         { "label": "小仓位试探性建仓，设置10%止损线，严格执行", "value": 3, "dimScores": { "DECISION": 3, "STRATEGY": 3 } },
-        { "label": "仔细复盘利空原因，重新评估模型假设，再决定", "value": 4, "dimScores": { "DECISION": 2, "STRATEGY": 3 } }
+        { "label": "仔细复盘利空原因，重新评估模型假设，再决定", "value": 4, "dimScores": { "DECISION": 2, "STRATEGY": 3, "PATIENCE": 2 } }
       ]
     },
     {
@@ -244,10 +244,10 @@
       "smartNote": "",
       "text": "你负责的一个投后管理项目，被投企业连续两个季度业绩下滑。创始人说「正在转型」，但转型的方向你看不太懂。你的LP开始问问题了。",
       "options": [
-        { "label": "相信创始人的判断，给两个季度时间看转型效果", "value": 1, "dimScores": { "EXECUTE": 1, "PATIENCE": 3 } },
+        { "label": "相信创始人的判断，给两个季度时间看转型效果", "value": 1, "dimScores": { "EXECUTE": 1, "PATIENCE": 3, "CYNICISM": 1 } },
         { "label": "要求创始人每周同步进展，并制定明确的转型里程碑", "value": 2, "dimScores": { "EXECUTE": 3, "PATIENCE": 2 } },
-        { "label": "立刻安排实地调研，独立验证转型可行性，再决定下一步", "value": 3, "dimScores": { "EXECUTE": 3, "PATIENCE": 1 } },
-        { "label": "先不急着做判断，约创始人和行业专家一起聊聊，听听第三方视角", "value": 4, "dimScores": { "EXECUTE": 2, "PATIENCE": 3 } }
+        { "label": "立刻安排实地调研，独立验证转型可行性，再决定下一步", "value": 3, "dimScores": { "EXECUTE": 3, "PATIENCE": 1, "STRATEGY": 2 } },
+        { "label": "先不急着做判断，约创始人和行业专家一起聊聊，听听第三方视角", "value": 4, "dimScores": { "EXECUTE": 2, "PATIENCE": 2, "NETWORK": 3 } }
       ]
     },
     {
@@ -258,10 +258,10 @@
       "smartNote": "",
       "text": "行业峰会上，你在茶歇时遇到一位大佬。刚聊了两句，旁边来了个人直接打断：「王总，借一步说话。」把你晾在一边。王总看了你一眼。",
       "options": [
-        { "label": "默默走开，不让自己看起来更尴尬", "value": 1, "dimScores": { "SOCIAL": 1, "CONFLICT": 1 } },
-        { "label": "自然地微笑点头示意，给王总留下「懂事」的印象，然后找机会再聊", "value": 2, "dimScores": { "SOCIAL": 2, "CONFLICT": 2 } },
-        { "label": "「王总您先忙，我加您微信，改天请教」，主动递名片留下后续连接", "value": 3, "dimScores": { "SOCIAL": 3, "CONFLICT": 1 } },
-        { "label": "自然地说「刚才聊到XX，特别有意思，要不我们换个时间细聊？」", "value": 4, "dimScores": { "SOCIAL": 3, "CONFLICT": 3 } }
+        { "label": "默默走开，不让自己看起来更尴尬", "value": 1, "dimScores": { "SOCIAL": 1, "CONFLICT": 1, "NETWORK": 1 } },
+        { "label": "自然地微笑点头示意，给王总留下「懂事」的印象，然后找机会再聊", "value": 2, "dimScores": { "SOCIAL": 2, "CONFLICT": 1, "SURVIVAL": 3, "NETWORK": 2 } },
+        { "label": "「王总您先忙，我加您微信，改天请教」，主动递名片留下后续连接", "value": 3, "dimScores": { "SOCIAL": 3, "CONFLICT": 1, "NETWORK": 3 } },
+        { "label": "自然地说「刚才聊到XX，特别有意思，要不我们换个时间细聊？」", "value": 4, "dimScores": { "SOCIAL": 3, "CONFLICT": 2, "STRATEGY": 2, "NETWORK": 3 } }
       ]
     },
     {
@@ -273,9 +273,9 @@
       "text": "公司架构调整，你的直属领导被调走了。新来的领导带了三个人，明显是要换血。你之前跟老领导关系很好，但现在老领导去了边缘部门。",
       "options": [
         { "label": "继续保持和老领导的联系，相信他的资源将来可能用得上", "value": 1, "dimScores": { "NETWORK": 3, "SURVIVAL": 1 } },
-        { "label": "主动向新领导靠拢，把老领导的人脉资源介绍给新领导，展示价值", "value": 2, "dimScores": { "NETWORK": 2, "SURVIVAL": 3 } },
+        { "label": "主动向新领导靠拢，把老领导的人脉资源介绍给新领导，展示价值", "value": 2, "dimScores": { "NETWORK": 3, "SURVIVAL": 3, "CYNICISM": 3, "BOUNDARY": 1 } },
         { "label": "对新领导保持正常配合，同时低调维护和老领导的关系", "value": 3, "dimScores": { "NETWORK": 2, "SURVIVAL": 2 } },
-        { "label": "专注于做好手头工作，让业绩说话，不过多卷入人际站队", "value": 4, "dimScores": { "NETWORK": 1, "SURVIVAL": 3 } }
+        { "label": "专注于做好手头工作，让业绩说话，不过多卷入人际站队", "value": 4, "dimScores": { "NETWORK": 1, "SURVIVAL": 2, "BOUNDARY": 3 } }
       ]
     }
   ],
