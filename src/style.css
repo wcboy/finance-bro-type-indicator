@@ -1133,6 +1133,53 @@ body:not(.app-ready) #app {
   border-top: 1px dashed rgba(26, 20, 10, 0.25);
 }
 
+/* —— Story 3 · 彩蛋附加段 —— */
+.egg-insert {
+  margin-top: 1.6rem;
+  padding: 1.1rem 1.1rem 1rem;
+  background: rgba(201, 58, 58, 0.04);
+  border: 1.5px dashed var(--rouge);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+.egg-insert::before {
+  content: "★ HIDDEN FILE ★";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--paper);
+  padding: 0 0.6rem;
+  font-family: var(--font-stamp);
+  font-size: 11px;
+  color: var(--rouge);
+  letter-spacing: 0.22em;
+  white-space: nowrap;
+}
+.egg-insert-label {
+  font-family: var(--font-stamp);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--rouge);
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+.egg-insert-intro {
+  font-family: var(--font-script);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--ink-black);
+  margin: 0.4rem 0 0.8rem;
+  text-align: center;
+}
+.egg-insert-note {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text-dark);
+  margin: 0;
+}
+
 /* —— Story 4 · 雷达 —— */
 .story-radar { padding-top: 3rem; }
 .story-radar .section-title {

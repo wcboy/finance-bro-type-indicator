@@ -557,26 +557,26 @@ async function init() {
       },
     );
 
-    // 彩蛋触发
+    // 彩蛋触发：不再替换主人格，仅作为"附加身份"叠加到结果上
+    // 主人格仍来自 determineResult 的 12 维匹配；彩蛋在 File 03 插入一段注脚
     const activeEggs = Array.isArray(eggs) ? eggs : [];
     for (const egg of activeEggs) {
       const chosen = special?.[egg.id];
       const trigger = egg.triggerOn;
       if (!trigger || chosen !== trigger.value) continue;
-      const forced =
+      const flavor =
         types.special.find((t) => t.code === trigger.forceCode) ||
         types.standard.find((t) => t.code === trigger.forceCode);
-      if (!forced) continue;
-      const previousPrimary = result.primary;
-      result.primary = {
-        ...forced,
-        similarity: 100,
-        exact: dimensions.order.length,
-        distance: 0,
-        triggered: true,
+      if (!flavor) continue;
+      result.egg = {
+        code: flavor.code,
+        cn: flavor.cn,
+        title: flavor.title,
+        intro: flavor.intro,
+        note: flavor.desc || "",
+        rarity: flavor.rarity || "",
         triggeredBy: egg.id,
       };
-      result.secondary = previousPrimary || result.secondary;
       result.mode = "egg";
       break;
     }
@@ -594,6 +594,7 @@ async function init() {
       primary: result.primary,
       levels: levels,
       mode: result.mode,
+      egg: result.egg || null,
     });
 
     // 构建第一个题目数据（使用 allQuestionsAnswered，包含 anchor）

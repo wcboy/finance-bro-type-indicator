@@ -96,7 +96,7 @@ export function renderResult({
   config,
   klineData,
 }) {
-  const { primary, secondary, rankings, mode = "normal" } = result || {};
+  const { primary, secondary, rankings, mode = "normal", egg = null } = result || {};
   if (!primary) return;
 
   const isEgg = mode === "egg";
@@ -106,9 +106,9 @@ export function renderResult({
   const identityMeta = IDENTITY_META[identity] || IDENTITY_META.junior;
   setText(byId("cover-identity-cn"), primary.cn || primary.code);
 
-  // cover 简述：用 intro，截断到一句
-  const briefText = isEgg
-    ? `很遗憾通知你：你触发了我司档案柜最底层的抽屉。你被永久标记为「${primary.cn}」——这是一份只有 ${primary.rarity || "?"} 人才会拿到的抽屉钥匙。`
+  // cover 简述：egg 模式下把"附加身份"写在主人格之后，不再覆盖主人格
+  const briefText = isEgg && egg
+    ? `你的主档案是「${primary.cn}」——但系统在档案柜底层发现了一个印着你名字的抽屉：「${egg.cn}」。真实的你，在这两层之间。`
     : isFallback
       ? `你的答案跳出了我司标准档案模板。本部门判定你为：${primary.cn}。请保持这份独特，或重测一次看看。`
       : primary.intro || "";
@@ -164,12 +164,25 @@ export function renderResult({
     }
   }
 
-  // ============ Story 3 · Roast 金句 ============
+  // ============ Story 3 · Roast 金句 + 彩蛋附加段 ============
   const roastQuote =
     primary.roast ||
     `你被归档为「${primary.cn}」。我方暂时没有更刻薄的话要说。`;
   setText(byId("roast-quote"), roastQuote);
   setText(byId("roast-desc"), primary.desc || "");
+
+  // 彩蛋附加段：只在 egg 模式且 result.egg 存在时显示；不替换主人格 desc
+  const eggInsert = byId("egg-insert");
+  if (eggInsert) {
+    if (isEgg && egg && egg.note) {
+      eggInsert.hidden = false;
+      setText(byId("egg-insert-label"), `HIDDEN FILE · ${egg.cn || ""}`);
+      setText(byId("egg-insert-intro"), egg.intro || "");
+      setText(byId("egg-insert-note"), egg.note);
+    } else {
+      eggInsert.hidden = true;
+    }
+  }
 
   // ============ Story 4 · 12 维雷达 + 维度详情 ============
   requestAnimationFrame(() => {
