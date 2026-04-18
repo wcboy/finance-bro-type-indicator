@@ -95,36 +95,105 @@ export function countDimensionHits(questions) {
 }
 
 /**
- * 原始分 → L/M/H 等级（标准差版 v2）
+ * 从题库推导每个维度的随机答题期望与标准差，给出 L/M/H 阈值。
  *
- * 优化后的算法：基于标准差划分，让 L/M/H 分布更均衡
- * 随机答题时：L ~24%, M ~52%, H ~24%
+ * 为什么需要这一步：
+ *   旧算法假设"每题给每个测过的维度贡献均值 2 分"——在旧式 value=1-3 且每题
+ *   整体套到 dims[] 里时成立。引入选项级 dimScores 后，同一题不同选项可能完全
+ *   不给某个维度分（0 分），真实期望≠2；继续用旧公式会导致几乎所有维度 →L，
+ *   主人格被挤到全 L 的 BEAN 上。
  *
- * 规则：
- *   mean = n × 2 (期望值)
- *   stdDev = sqrt(n × 2/3) (均匀分布的标准差)
- *   lowThreshold = mean - 0.6 × stdDev
- *   highThreshold = mean + 0.6 × stdDev
- *   score ≤ lowThreshold  → L
- *   score ≥ highThreshold → H
- *   其他 → M
+ * 算法：
+ *   对每题 q, 维度 d: 将 d 的 4 选项分数 [s1,s2,s3,s4] 视为等概率抽样，
+ *     μ_q = mean(s_i), σ²_q = var(s_i)
+ *   跨题独立累加：μ(d) = Σμ_q, σ²(d) = Σσ²_q
+ *   阈值：low = μ - k·σ, high = μ + k·σ (k=0.6 对正态近似给 ~27/46/27)
  *
- * @param {Object} scores   维度原始分
- * @param {Object} hits     每维被测次数
- * @param {number} ratio    保留参数，向后兼容
+ * @param {Array}  questions  主题目数组
+ * @param {number} k          标准差倍数（默认 0.6）
+ * @returns {Object} { [dim]: { mean, stdDev, low, high } }
+ */
+export function computeLevelThresholds(questions, k = 0.6) {
+  const stats = {}
+  for (const q of questions) {
+    const opts = q.options || []
+    if (opts.length === 0) continue
+    const nOpts = opts.length
+
+    // 本题涉及哪些维度：dimScores 全集 ∪ q.dims/q.dim
+    const qDims = new Set()
+    for (const o of opts) {
+      if (o.dimScores) for (const d of Object.keys(o.dimScores)) qDims.add(d)
+    }
+    const legacyDims = Array.isArray(q.dims) ? q.dims : (q.dim ? [q.dim] : [])
+    for (const d of legacyDims) qDims.add(d)
+
+    for (const dim of qDims) {
+      // 每个选项对该维度的得分（缺省 0）
+      const scoresArr = opts.map((o) => {
+        if (o.dimScores && o.dimScores[dim] !== undefined) return o.dimScores[dim]
+        // 旧格式：q.dims 包含 dim 且 option 有数字 value
+        if (legacyDims.includes(dim) && typeof o.value === 'number') return o.value
+        return 0
+      })
+      const mean = scoresArr.reduce((a, b) => a + b, 0) / nOpts
+      const variance = scoresArr.reduce((s, x) => s + (x - mean) ** 2, 0) / nOpts
+      if (!stats[dim]) stats[dim] = { mean: 0, variance: 0 }
+      stats[dim].mean += mean
+      stats[dim].variance += variance
+    }
+  }
+
+  const thresholds = {}
+  for (const [dim, { mean, variance }] of Object.entries(stats)) {
+    const stdDev = Math.sqrt(variance)
+    thresholds[dim] = {
+      mean,
+      stdDev,
+      low: mean - k * stdDev,
+      high: mean + k * stdDev,
+    }
+  }
+  return thresholds
+}
+
+/**
+ * 原始分 → L/M/H 等级。
+ *
+ * 第二参数接受 thresholds（新，来自 computeLevelThresholds）或 hits（旧，
+ * 用 n*2 常数公式做向后兼容，但已不推荐——随 dimScores 稀疏度上升会失真）。
+ *
+ * 注：遍历 thresholds 的所有维度而非 scores 的维度——用户未得分（=0）的
+ * 维度本该被判 L，旧实现遗漏会让其保持 M。
+ *
+ * @param {Object} scores                 用户维度原始分
+ * @param {Object} thresholdsOrHits       computeLevelThresholds 的输出，或旧 hits 对象
  * @returns {Object} { FOCUS: 'H', ... }
  */
-export function scoresToLevels(scores, hits, ratio = 0.5) {
+export function scoresToLevels(scores, thresholdsOrHits) {
+  const sample = thresholdsOrHits && Object.values(thresholdsOrHits)[0]
+  const isThresholds = sample && typeof sample === 'object' && 'low' in sample
+
   const levels = {}
-  for (const [dim, score] of Object.entries(scores)) {
-    const n = hits[dim] || 1
-    const mean = n * 2  // 期望值
-    const stdDev = Math.sqrt(n * 2 / 3)  // 标准差
-    const low = Math.floor(mean - 0.6 * stdDev)
-    const high = Math.ceil(mean + 0.6 * stdDev)
-    if (score <= low) levels[dim] = 'L'
-    else if (score >= high) levels[dim] = 'H'
-    else levels[dim] = 'M'
+  if (isThresholds) {
+    for (const [dim, th] of Object.entries(thresholdsOrHits)) {
+      const score = scores[dim] || 0
+      if (score <= th.low) levels[dim] = 'L'
+      else if (score >= th.high) levels[dim] = 'H'
+      else levels[dim] = 'M'
+    }
+  } else {
+    const hits = thresholdsOrHits || {}
+    for (const [dim, score] of Object.entries(scores)) {
+      const n = hits[dim] || 1
+      const mean = n * 2
+      const stdDev = Math.sqrt((n * 2) / 3)
+      const low = Math.floor(mean - 0.6 * stdDev)
+      const high = Math.ceil(mean + 0.6 * stdDev)
+      if (score <= low) levels[dim] = 'L'
+      else if (score >= high) levels[dim] = 'H'
+      else levels[dim] = 'M'
+    }
   }
   return levels
 }

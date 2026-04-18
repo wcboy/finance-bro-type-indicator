@@ -6,7 +6,7 @@
 import { setText, throttle } from "./utils.js";
 import {
   calcDimensionScores,
-  countDimensionHits,
+  computeLevelThresholds,
   scoresToLevels,
   determineResult,
 } from "./engine.js";
@@ -401,7 +401,8 @@ async function init() {
   initPreviewCarousel();
   initImageMarquee();
 
-  const hits = countDimensionHits(questions.main || []);
+  // 数据驱动阈值：启动时一次性从题库算出每维 μ / σ，后续直接查
+  const levelThresholds = computeLevelThresholds(questions.main || []);
 
   const progressText = byId("progress-text");
   const caseId = byId("case-id");
@@ -545,11 +546,7 @@ async function init() {
 
   function onComplete({ answers, identity, special, eggs, answerHistory, allAnswerTimes, totalTime, allQuestionsAnswered }) {
     const scores = calcDimensionScores(answers, questions.main);
-    const levels = scoresToLevels(
-      scores,
-      hits,
-      config.scoring?.thresholdRatio ?? 0.5,
-    );
+    const levels = scoresToLevels(scores, levelThresholds);
     lastLevels = levels;
     const result = determineResult(
       levels,
