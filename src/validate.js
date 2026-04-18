@@ -11,13 +11,22 @@ function isNonEmptyArray(x) {
   return Array.isArray(x) && x.length > 0;
 }
 
-function validateOption(opt, qId, idx) {
+function validateOption(opt, qId, idx, role) {
   assert(opt && typeof opt === "object", `Q ${qId} 选项 #${idx} 不是对象`);
   assert(typeof opt.label === "string" && opt.label.length > 0, `Q ${qId} 选项 #${idx} 缺少 label`);
-  assert(
-    typeof opt.value === "number" || opt.dimScores,
-    `Q ${qId} 选项 #${idx} 缺少 value 或 dimScores`
-  );
+  // anchor 题的 value 是字符串身份标签 (intern/junior/senior)，不参与评分
+  // 只有 main 题要求 value:number 或 dimScores
+  if (role === "main") {
+    assert(
+      typeof opt.value === "number" || opt.dimScores,
+      `Q ${qId} 选项 #${idx} 缺少 value(number) 或 dimScores`
+    );
+  } else {
+    assert(
+      opt.value !== undefined && opt.value !== null,
+      `Q ${qId} 选项 #${idx} 缺少 value`
+    );
+  }
   if (opt.dimScores) {
     assert(typeof opt.dimScores === "object", `Q ${qId} 选项 #${idx} dimScores 不是对象`);
   }
@@ -28,7 +37,7 @@ function validateQuestion(q, role) {
   assert(typeof q.id === "string" && q.id.length > 0, `${role} 题目缺少 id`);
   assert(typeof q.text === "string" && q.text.length > 0, `Q ${q.id} 缺少 text`);
   assert(isNonEmptyArray(q.options), `Q ${q.id} 缺少 options`);
-  q.options.forEach((o, i) => validateOption(o, q.id, i));
+  q.options.forEach((o, i) => validateOption(o, q.id, i, role));
   if (role === "main") {
     const hasDimScores = q.options.some((o) => o.dimScores);
     const hasDims = Array.isArray(q.dims) || typeof q.dim === "string";

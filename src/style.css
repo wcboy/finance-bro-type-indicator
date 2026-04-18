@@ -505,9 +505,9 @@ body:not(.app-ready) #app {
 }
 .marquee-track {
   display: flex;
-  gap: 12px;
-  animation: marqueeScroll 15s linear infinite;
+  animation: marqueeScroll 10s linear infinite;
   padding: 8px 0;
+  will-change: transform;
 }
 .marquee-track:hover {
   animation-play-state: paused;
@@ -515,6 +515,7 @@ body:not(.app-ready) #app {
 .marquee-track img {
   height: 140px;
   width: auto;
+  margin-right: 12px;
   border-radius: var(--radius-md);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;

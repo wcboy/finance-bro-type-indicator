@@ -145,11 +145,10 @@ export function renderRadar(
     else if (cos < -0.2) ctx.textAlign = "right";
     else ctx.textAlign = "center";
 
-    // 根据等级微调标签颜色（高亮 H 维度，L 维度也清晰显示）
+    // 根据等级微调标签颜色：H 高亮，其余统一用传入的 labelColor
+    // （旧实现对 L 硬编码浅色，在浅色结果页背景上会隐身）
     const lv = userLevels[dimOrder[i]] || "M";
-    if (lv === "H") ctx.fillStyle = accent;
-    else if (lv === "L") ctx.fillStyle = "rgba(245, 236, 214, 0.85)"; // L维度也清晰显示，只是不高亮
-    else ctx.fillStyle = labelColor;
+    ctx.fillStyle = lv === "H" ? accent : labelColor;
 
     ctx.fillText(label, lx, ly);
   }
