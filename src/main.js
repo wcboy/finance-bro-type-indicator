@@ -13,7 +13,7 @@ import {
 import { createQuiz } from "./quiz.js";
 import { renderResult } from "./result.js";
 import { renderRadar } from "./chart.js";
-import { uploadResult, getTotalCount } from "./firebaseConfig.js";
+import { uploadResult } from "./firebaseConfig.js";
 import "./style.css";
 
 // 静态导入数据，Vite 打包 tree-shake

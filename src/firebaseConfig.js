@@ -4,7 +4,7 @@
  */
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDx4dxlZn7KAMEAYRWUZjoHgp9LrA6nufA",
@@ -59,43 +59,6 @@ export async function uploadResult(data) {
   } catch (error) {
     console.error("上传失败:", error);
     return null;
-  }
-}
-
-/**
- * 获取总计数
- * @returns {Promise<number>}
- */
-export async function getTotalCount() {
-  try {
-    const snapshot = await getDocs(collection(db, "results"));
-    return snapshot.size;
-  } catch (error) {
-    console.error("获取计数失败:", error);
-    return 0;
-  }
-}
-
-/**
- * 获取最近的结果列表
- * @param {number} limitCount - 限制数量
- * @returns {Promise<Array>}
- */
-export async function getRecentResults(limitCount = 10) {
-  try {
-    const q = query(
-      collection(db, "results"),
-      orderBy("timestamp", "desc"),
-      limit(limitCount)
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-  } catch (error) {
-    console.error("获取结果列表失败:", error);
-    return [];
   }
 }
 
