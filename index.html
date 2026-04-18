@@ -75,37 +75,25 @@
           尽调完成度 <strong id="progress-text">0 / 21</strong>
         </div>
 
-        <!-- 账户 & 交易面板（每题间可操作）-->
-        <div class="trade-panel" id="trade-panel">
-          <div class="trade-status">
+        <!-- 仓位面板：一日一次决策，4 档（0 / 1/3 / 2/3 / 全仓） -->
+        <div class="trade-panel" id="trade-panel" hidden>
+          <div class="trade-top">
             <div class="trade-col">
-              <span class="trade-k">现价</span>
+              <span class="trade-k">今日开盘</span>
               <span class="trade-v" id="port-price">—</span>
             </div>
-            <div class="trade-col">
-              <span class="trade-k">现金</span>
-              <span class="trade-v" id="port-cash">¥30,000</span>
-            </div>
-            <div class="trade-col">
-              <span class="trade-k">持仓</span>
-              <span class="trade-v"><span id="port-shares">0</span></span>
-              <span class="trade-sub" id="port-mkt-val">开盘前</span>
-            </div>
             <div class="trade-col trade-col-total">
-              <span class="trade-k">总资产</span>
-              <span class="trade-v" id="port-total">¥30,000</span>
+              <span class="trade-k">浮动盈亏</span>
               <span class="trade-pnl" id="port-pnl">+0.00%</span>
             </div>
           </div>
-          <div class="trade-actions">
-            <button type="button" class="trade-btn buy" data-action="buy" data-ratio="0.3333" disabled>买 1/3</button>
-            <button type="button" class="trade-btn buy" data-action="buy" data-ratio="0.6667" disabled>买 2/3</button>
-            <button type="button" class="trade-btn buy trade-btn-emphasis" data-action="allIn" disabled>All in</button>
-            <button type="button" class="trade-btn hold" data-action="hold" disabled>持仓</button>
-            <button type="button" class="trade-btn sell trade-btn-emphasis" data-action="clear" disabled>清仓</button>
-            <button type="button" class="trade-btn sell" data-action="sell" data-ratio="0.6667" disabled>卖 2/3</button>
-            <button type="button" class="trade-btn sell" data-action="sell" data-ratio="0.3333" disabled>卖 1/3</button>
+          <div class="pos-slider" id="pos-slider" role="radiogroup" aria-label="今日仓位">
+            <button type="button" class="pos-seg" data-slot="0" role="radio">空仓</button>
+            <button type="button" class="pos-seg" data-slot="1" role="radio">1/3</button>
+            <button type="button" class="pos-seg" data-slot="2" role="radio">2/3</button>
+            <button type="button" class="pos-seg" data-slot="3" role="radio">全仓</button>
           </div>
+          <div class="pos-hint" id="pos-hint">选好仓位再答题</div>
         </div>
 
         <div class="question-area">
