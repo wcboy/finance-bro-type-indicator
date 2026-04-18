@@ -499,9 +499,8 @@ async function init() {
   // 处理返回上一题
   function handleBack() {
     const progress = quiz.progress();
-    // 第一题不能返回
-    if (progress.current <= 1 && progress.phase === "main") return;
-    if (progress.phase === "anchor" && progress.current <= 1) return;
+    // 唯一无法回退：尚未作答身份题 (phase=anchor & current=0)
+    if (progress.phase === "anchor" && progress.current === 0) return;
 
     // 第一次使用回退功能时显示弹窗
     if (!hasShownBackPopup) {
@@ -514,15 +513,11 @@ async function init() {
     }
   }
 
-  // 更新返回按钮可见性
+  // 更新返回按钮可见性：仅在"身份题尚未作答"时隐藏，其它阶段常驻
   function updateBackButtonVisibility() {
     const progress = quiz.progress();
-    // 第一题隐藏返回按钮
-    if (progress.current <= 1) {
-      backBtn.hidden = true;
-    } else {
-      backBtn.hidden = false;
-    }
+    const beforeAnyAnswer = progress.phase === "anchor" && progress.current === 0;
+    backBtn.hidden = beforeAnyAnswer;
   }
 
   function handleAnswer(value, originalIdx) {
